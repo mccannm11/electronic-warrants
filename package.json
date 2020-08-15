@@ -25,6 +25,15 @@
       "pre-commit": "pretty-quick --staged"
     }
   },
+  "prettier": {
+    "bracketSpacing": true,
+    "jsxBracketSameLine": false,
+    "printWidth": 80,
+    "semi": false,
+    "singleQuote": false,
+    "tabWidth": 2,
+    "trailingComma": "none"
+  },
   "browserslist": {
     "production": [
       ">0.2%",
