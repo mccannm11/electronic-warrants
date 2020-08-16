@@ -1,17 +1,28 @@
 import styled from "styled-components"
 import React from "react"
 import { Colors } from "../styles/Colors"
+import { Pixel } from "../Types"
+
+const SidebarWidth: Pixel = 300
 
 const StyledDashboardLayout = styled.div`
   display: flex;
   flex-direction: row;
   background-color: white;
-  height: 100vh;
+  height: 100%;
+  position: relative;
+  margin-left: ${SidebarWidth}px;
 `
 
 const StyledSidebarContent = styled.div`
-  min-width: 300px;
+  min-width: ${SidebarWidth}px;
+  max-width: ${SidebarWidth}px;
+  overflow: hidden;
   background-color: ${Colors.blackCoral};
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
 `
 
 const StyledMainContent = styled.div`

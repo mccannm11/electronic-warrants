@@ -25,6 +25,7 @@ type HeaderProps = {
 
 const StyledHeader = styled.div<HeaderProps>`
   font-size: ${({ variant }) => HeaderSizeMap[variant]}rem;
+  font-weight: ${(props) => props.weight};
   opacity: ${(props) => props.opacity};
   color: ${(props) => Colors[props.color]};
   line-height: 1.25;
