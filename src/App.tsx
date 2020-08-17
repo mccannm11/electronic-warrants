@@ -15,13 +15,11 @@ import styled from "styled-components"
 import { Opacity } from "./Types"
 
 const AppSidebarContent = () => (
-  <Sidebar>
-    <SidebarHeader>
+  <Sidebar backgroundColor="white">
+    <SidebarHeader backgroundColor="white">
       <PlaceholderImage height={24} width={24} circle />
       <Spacer width={0.5} />
-      <Header variant="5" color="white">
-        Brand name
-      </Header>
+      <Header variant="5">Brand name</Header>
     </SidebarHeader>
     <Spacer height={1} />
     <NavigationItem>Home</NavigationItem>

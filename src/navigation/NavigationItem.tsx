@@ -10,7 +10,6 @@ const StyledNavigationItem = styled.div`
   padding: 12px 12px 12px 20px;
   display: flex;
   align-items: center;
-  color: white;
   &:hover {
     background-color: rgba(0, 0, 0, 0.1);
     cursor: pointer;
