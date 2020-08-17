@@ -13,6 +13,8 @@ import { PlaceholderImage } from "./utilities/PlaceholderImage"
 import { Colors } from "./styles/Colors"
 import styled from "styled-components"
 import { Opacity } from "./Types"
+import { HR } from "./utilities/HR"
+import { Panel } from "./surfaces/Panel"
 
 const AppSidebarContent = () => (
   <Sidebar backgroundColor="white">
@@ -83,6 +85,8 @@ const AppMainContent = () => (
     <PageHeader>This is a page title</PageHeader>
     <Text variant="small">{loremIpsum}</Text>
     <Spacer height={1.5} />
+    <HR color="lightGrey" />
+    <Spacer height={1.5} />
     <Text variant="medium">{loremIpsum}</Text>
     <Spacer height={1.5} />
     <Text variant="large">{loremIpsum}</Text>
@@ -102,6 +106,13 @@ const AppMainContent = () => (
     <ColorGrid />
     <Text variant="large">{loremIpsum}</Text>
     <Spacer height={1.5} />
+    <Header variant="3">Panel</Header>
+    <Panel>
+      <Header variant="5">Panel header</Header>
+      <Text variant="small" color="black60">
+        subtitle
+      </Text>
+    </Panel>
   </Page>
 )
 

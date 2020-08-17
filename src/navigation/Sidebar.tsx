@@ -8,6 +8,7 @@ const StyledSidebar = styled.div<SidebarProps>`
   width: 100%;
   height: 100%;
   background-color: ${({ backgroundColor }) => Colors[backgroundColor]};
+  border-right: 1px solid #ccc;
 `
 
 type SidebarProps = {

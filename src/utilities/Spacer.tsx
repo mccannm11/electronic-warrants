@@ -1,10 +1,6 @@
 import styled, { css } from "styled-components"
 import React, { FC } from "react"
 
-type Required<T> = T extends object
-  ? { [P in keyof T]-?: NonNullable<T[P]> }
-  : T
-
 const flexAuto = css`
   flex: 1 1 auto;
   min-width: 0;

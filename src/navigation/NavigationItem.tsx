@@ -6,7 +6,6 @@ import { Header } from "../typography/Header"
 
 const StyledNavigationItem = styled.div`
   transition: all 0.15s cubic-bezier(0.8, 0, 0.1, 1);
-  width: 100%;
   padding: 12px 12px 12px 20px;
   display: flex;
   align-items: center;
