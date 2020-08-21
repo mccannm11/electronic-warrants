@@ -9,6 +9,10 @@ const GlobalStyles = createGlobalStyle`
     margin: 0;
     background-color: purple;
   }
+  
+  * {
+    box-sizing: border-box;
+  }
 `
 
 export { GlobalStyles }

@@ -12,9 +12,10 @@ import { SidebarHeader } from "./navigation/SidebarHeader"
 import { PlaceholderImage } from "./utilities/PlaceholderImage"
 import { Colors } from "./styles/Colors"
 import styled from "styled-components"
-import { Opacity } from "./Types"
+import { Opacity, Rem } from "./Types"
 import { HR } from "./utilities/HR"
 import { Panel } from "./surfaces/Panel"
+import { Button } from "./inputs/Button"
 
 const AppSidebarContent = () => (
   <Sidebar backgroundColor="white">
@@ -113,8 +114,69 @@ const AppMainContent = () => (
         subtitle
       </Text>
     </Panel>
+
+    <Spacer height={3} />
+    <Grid minWidth={12.5} columns={4} padding={0.5}>
+      <Panel>
+        <Header variant="5">Panel header</Header>
+        <Text variant="small" color="black60">
+          subtitle
+        </Text>
+        <Spacer height={1} />
+        <Button size="small">Click me</Button>
+      </Panel>
+
+      <Panel>
+        <Header variant="5">Panel header</Header>
+        <Text variant="small" color="black60">
+          subtitle
+        </Text>
+        <Spacer height={1} />
+        <Button size="small">Click me</Button>
+      </Panel>
+
+      <Panel>
+        <Header variant="5">Panel header</Header>
+        <Text variant="small" color="black60">
+          subtitle
+        </Text>
+        <Spacer height={1} />
+        <Button size="small">Click me</Button>
+      </Panel>
+
+      <Panel>
+        <Header variant="5">Panel header</Header>
+        <Text variant="small" color="black60">
+          subtitle
+        </Text>
+        <Spacer height={1} />
+        <Button size="small">Click me</Button>
+      </Panel>
+    </Grid>
+    <Spacer height={3} />
   </Page>
 )
+
+type GridProps = {
+  columns: number
+  padding: Rem
+  minWidth: Rem
+}
+
+const Grid = styled.div<GridProps>`
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  margin: -${({ padding }) => padding}rem;
+  > * {
+    flex-grow: 1;
+    min-width: ${({ minWidth }) => minWidth}rem;
+    width: calc(
+      ${({ columns }) => 100 / columns}% - ${({ padding }) => padding * 2}rem
+    );
+    margin: ${({ padding }) => padding}rem;
+  }
+`
 
 const App = () => {
   return (
