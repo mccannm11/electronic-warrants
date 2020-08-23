@@ -8,6 +8,7 @@ const StyledText = styled.p<TextProps>`
   font-size: ${({ variant }) => TextSizeMap[variant]}rem;
   margin: 0;
   line-height: 1.5;
+  opacity: ${(props) => props.opacity / 100};
 `
 
 const TextSizeMap: Record<TextVariant, Rem> = {

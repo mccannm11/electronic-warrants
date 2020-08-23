@@ -1,18 +1,21 @@
-import React from "react"
+import React, { useState } from "react"
 import { PageWithNavigationLayout } from "../layouts/PageWithNavigationLayout"
 import { PageHeader } from "../layouts/PageHeader"
 import { Page } from "../layouts/Page"
-import { ConnectedTextField, TextField } from "../inputs/TextField"
+import { ConnectedTextField } from "../inputs/TextField"
 import styled from "styled-components"
 import { Spacer } from "../utilities/Spacer"
 import { Colors } from "../styles/Colors"
 import { Button } from "../inputs/Button"
 import { FormProvider, useForm } from "react-hook-form"
+import { Header } from "../typography/Header"
+import { HR } from "../utilities/HR"
+import { Text } from "../typography/Text"
 
 const StyledFormLayout = styled.div`
   display: flex;
   flex-direction: column;
-  max-width: 400px;
+  max-width: 600px;
   margin: 32px 0;
 `
 
@@ -24,11 +27,18 @@ const StyledFormFooter = styled.div`
   border-bottom: 1px solid ${Colors.black20};
 `
 
+const sleep = (timeout: number) =>
+  new Promise((res, rej) => {
+    setTimeout(res, timeout)
+  })
+
 const FormsPage = () => {
   const formMethods = useForm()
+  const [submitData, setSubmitData] = useState([])
 
   const handleSubmit = formMethods.handleSubmit(async (formData) => {
-    console.log(formData)
+    setSubmitData([...submitData, formData])
+    await sleep(formData.timeout)
   })
 
   return (
@@ -62,11 +72,50 @@ const FormsPage = () => {
                 type="password"
               />
               <ConnectedTextField label="Email" name="email" />
-              <ConnectedTextField disabled label="Email" name="email" />
+              <ConnectedTextField
+                disabled
+                label="Username"
+                name="username"
+                defaultValue="Ronald Bringer"
+              />
+              <ConnectedTextField
+                label="timout"
+                name="timeout"
+                validationRules={{ required: "Please enter a timeout value" }}
+                defaultValue={100}
+              />
               <StyledFormFooter>
                 <Button onClick={handleSubmit}>Submit</Button>
               </StyledFormFooter>
             </StyledFormLayout>
+
+            <Spacer height={4} />
+            <Header variant="3">Form state</Header>
+            <Spacer height={0.5} />
+            <HR />
+            <Spacer height={1} />
+
+            <Text>
+              Is Submitted:&nbsp;
+              {formMethods.formState.isSubmitted ? "true" : "false"}
+            </Text>
+            <Text>
+              Is submitting:&nbsp;
+              {formMethods.formState.isSubmitting ? "true" : "false"}
+            </Text>
+            <Text> Submit count:&nbsp;{formMethods.formState.submitCount}</Text>
+
+            <Spacer height={4} />
+            <Header variant="3">Submitted Data</Header>
+            <Spacer height={0.5} />
+            <HR />
+            <Spacer height={1} />
+            {submitData.map((data) => (
+              <>
+                <Spacer height={1} />
+                {JSON.stringify(data)}
+              </>
+            ))}
           </form>
         </FormProvider>
       </PageWithNavigationLayout>

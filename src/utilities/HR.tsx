@@ -14,7 +14,7 @@ type HRProps = {
   color?: Color
 }
 
-const HR: FC<HRProps> = ({ width = 1, color = "black", ...props }) => (
+const HR: FC<HRProps> = ({ width = 1, color = "black20", ...props }) => (
   <StyledHR width={width} color={color} {...props} />
 )
 

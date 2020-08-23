@@ -20,14 +20,29 @@ const TypographyPage = () => (
         <HR color="lightGrey" />
         <Spacer height={1} />
 
+        <Spacer height={1} />
+        <Header variant="6" weight={700}>
+          Small
+        </Header>
+        <Spacer height={0.5} />
         <Text variant="small">
           <LoremIpsum />
         </Text>
-        <Spacer height={1.5} />
+
+        <Spacer height={1} />
+        <Header variant="6" weight={700}>
+          Medium
+        </Header>
+        <Spacer height={0.5} />
         <Text variant="medium">
           <LoremIpsum />
         </Text>
-        <Spacer height={1.5} />
+
+        <Spacer height={1} />
+        <Header variant="6" weight={700}>
+          Large
+        </Header>
+        <Spacer height={0.5} />
         <Text variant="large">
           <LoremIpsum />
         </Text>
