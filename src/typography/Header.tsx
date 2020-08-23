@@ -1,5 +1,5 @@
 import styled from "styled-components"
-import React, { FC } from "react"
+import React, { FC, ReactNode } from "react"
 import { Opacity, Rem } from "../Types"
 import { Color, Colors } from "../styles/Colors"
 
@@ -21,12 +21,13 @@ type HeaderProps = {
   opacity?: Opacity
   color?: Color
   weight?: FontWeight
+  children: ReactNode
 }
 
 const StyledHeader = styled.div<HeaderProps>`
   font-size: ${({ variant }) => HeaderSizeMap[variant]}rem;
   font-weight: ${(props) => props.weight};
-  opacity: ${(props) => props.opacity};
+  opacity: ${(props) => props.opacity / 100};
   color: ${(props) => Colors[props.color]};
   line-height: 1.25;
   margin: 0;
