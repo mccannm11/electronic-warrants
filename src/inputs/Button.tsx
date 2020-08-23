@@ -1,6 +1,7 @@
 import styled, { css } from "styled-components"
-import React, { FC } from "react"
+import React, { FC, HTMLAttributes, HTMLProps } from "react"
 import { Color, Colors } from "../styles/Colors"
+import { animate } from "../styles/Mixins"
 
 type ButtonSize = "small" | "medium" | "large"
 
@@ -20,6 +21,7 @@ const ButtonPaddings: Record<ButtonSize, any> = {
 }
 
 const StyledButton = styled.button<ButtonProps>`
+  ${animate()}
   ${({ size }) => ButtonPaddings[size]};
   color: white;
   background-color: ${({ color }) => Colors[color]};
@@ -29,14 +31,14 @@ const StyledButton = styled.button<ButtonProps>`
   cursor: pointer;
   outline: none;
   &:hover {
-    background-color: white;
+    background-color: ${({ color }) => Colors[color]}80;
   }
 `
 
 type ButtonProps = {
   size?: ButtonSize
   color?: Color
-}
+} & HTMLAttributes<HTMLButtonElement>
 
 const Button: FC<ButtonProps> = ({
   color = "coolGrey",

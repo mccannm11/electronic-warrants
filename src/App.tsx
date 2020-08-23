@@ -1,5 +1,4 @@
-import React, { useEffect } from "react"
-import { DashboardLayout } from "./layouts/DashboardLayout"
+import React from "react"
 import { GlobalStyles } from "./styles/GlobalStyles"
 import { Header } from "./typography/Header"
 import { Text } from "./typography/Text"
@@ -9,14 +8,12 @@ import { PageHeader } from "./layouts/PageHeader"
 import { Colors } from "./styles/Colors"
 import styled from "styled-components"
 import { Opacity } from "./Types"
-import { HR } from "./utilities/HR"
 import { Panel } from "./surfaces/Panel"
 import { Button } from "./inputs/Button"
 import { Grid } from "./utilities/Grid"
 import { PageErrorBoundary } from "./errorBoundaries/PageErrorBoundary"
 import { BrowserRouter, Switch, Route } from "react-router-dom"
 import { Routes } from "./utilities/Routes"
-import { LoremIpsum } from "./utilities/LoremIpsum"
 import { NotFoundPage } from "./pages/NotFoundPage"
 
 const StyledColorGrid = styled.div`
@@ -116,7 +113,14 @@ const AppRouter = () => (
     {Object.keys(Routes).map((routeKey) => {
       const route = Routes[routeKey]
 
-      return <Route exact path={route.path} component={route.component} />
+      return (
+        <Route
+          key={route.path}
+          exact={route.exact}
+          path={route.path}
+          component={route.component}
+        />
+      )
     })}
     <Route component={NotFoundPage} />
   </Switch>

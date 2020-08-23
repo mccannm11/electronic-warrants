@@ -5,7 +5,9 @@ import { HR } from "../utilities/HR"
 
 const PageHeader = ({ children }) => (
   <>
-    <Header variant="3">{children}</Header>
+    <Header variant="3" weight={700}>
+      {children}
+    </Header>
     <Spacer height={0.75} />
     <HR color="lightGrey" />
     <Spacer height={2} />

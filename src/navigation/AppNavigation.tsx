@@ -13,7 +13,9 @@ const AppNavigation: FC = () => (
     <SidebarHeader backgroundColor="white">
       <PlaceholderImage height={24} width={24} circle />
       <Spacer width={0.5} />
-      <Header variant="5">Brand name</Header>
+      <Header variant="5" weight={500}>
+        Brand name
+      </Header>
     </SidebarHeader>
     <Spacer height={1} />
 

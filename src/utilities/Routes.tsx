@@ -2,7 +2,7 @@ import { ComponentType } from "react"
 import { HomePage } from "../pages/HomePage"
 import { TypographyPage } from "../pages/TypographyPage"
 import { FormsPage } from "../pages/FormsPage"
-import * as React from "react"
+import React from "react"
 
 type Route = {
   path: string

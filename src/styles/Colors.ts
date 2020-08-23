@@ -7,6 +7,7 @@ enum Colors {
   blackCoral = "#56667A",
   lightGrey = "#ccc",
   white = "#fff",
+  errorRed = "#ff0033",
   black10 = "rgba(0,0,0,.1)",
   black20 = "rgba(0,0,0,.2)",
   black30 = "rgba(0,0,0,.3)",
