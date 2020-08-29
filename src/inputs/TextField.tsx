@@ -49,7 +49,7 @@ type StyledTextFieldLabelProps = {
   validationState: ValidationState
 }
 
-const StyledTextFieldLabel = styled.label<StyledTextFieldLabelProps>`
+export const StyledTextFieldLabel = styled.label<StyledTextFieldLabelProps>`
   ${animate(0.175)};
   color: ${(props) =>
     props.validationState === "invalid" ? Colors.errorRed : Colors.black};
@@ -62,11 +62,11 @@ const StyledTextFieldLabel = styled.label<StyledTextFieldLabelProps>`
   font-weight: ${(props) => (props.formElementState === "open" ? 400 : 500)};
 `
 
-type StyledTextFieldWrapper = {
+type StyledFormFieldWrapperProps = {
   disabled?: boolean
 }
 
-const StyledTextFieldWrapper = styled.div<StyledTextFieldWrapper>`
+const StyledFormFieldWrapper = styled.div<StyledFormFieldWrapperProps>`
   position: relative;
   cursor: ${(props) => (props.disabled ? "not-allowed" : "text")};
 `
@@ -75,8 +75,8 @@ type FieldError = {
   message: string
 }
 
-type FormElementState = "open" | "closed"
-type ValidationState = "valid" | "invalid"
+export type FormElementState = "open" | "closed"
+export type ValidationState = "valid" | "invalid"
 
 type StyledErrorMessageProps = {
   validationState: ValidationState
@@ -130,7 +130,7 @@ const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
 
     return (
       <>
-        <StyledTextFieldWrapper
+        <StyledFormFieldWrapper
           disabled={disabled}
           ref={wrapperRef}
           onClick={handleWrapperClick}
@@ -153,7 +153,7 @@ const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
             onFocus={handleInputFocus}
             onBlur={handleInputBlur}
           />
-        </StyledTextFieldWrapper>
+        </StyledFormFieldWrapper>
         <StyledErrorMessage validationState={validationState}>
           {error?.message}
         </StyledErrorMessage>
@@ -179,4 +179,4 @@ const ConnectedTextField: FC<ConnectedTextFieldProps> = ({
     <TextField ref={register(validationRules)} error={fieldError} {...props} />
   )
 }
-export { TextField, ConnectedTextField }
+export { TextField, ConnectedTextField, StyledFormFieldWrapper }
