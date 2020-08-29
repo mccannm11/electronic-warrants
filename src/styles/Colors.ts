@@ -7,7 +7,6 @@ enum Colors {
   blackCoral = "#56667A",
   lightGrey = "#ccc",
   white = "#fff",
-  errorRed = "#ff0033",
   black10 = "rgba(0,0,0,.1)",
   black20 = "rgba(0,0,0,.2)",
   black30 = "rgba(0,0,0,.3)",
@@ -16,7 +15,8 @@ enum Colors {
   black60 = "rgba(0,0,0,.6)",
   black70 = "rgba(0,0,0,.7)",
   black80 = "rgba(0,0,0,.8)",
-  black90 = "rgba(0,0,0,.9)"
+  black90 = "rgba(0,0,0,.9)",
+  errorRed = "#ff0033"
 }
 
 export type Color = keyof typeof Colors

@@ -3,6 +3,7 @@ import { HomePage } from "../pages/HomePage"
 import { TypographyPage } from "../pages/TypographyPage"
 import { FormsPage } from "../pages/FormsPage"
 import React from "react"
+import { ColorsPage } from "../pages/ColorsPage"
 
 type Route = {
   path: string
@@ -28,6 +29,12 @@ const Routes: Record<string, Route> = {
     path: "/forms",
     component: FormsPage,
     title: "Forms",
+    exact: false
+  },
+  Colors: {
+    path: "/colors",
+    component: ColorsPage,
+    title: "Colors",
     exact: false
   }
 }
