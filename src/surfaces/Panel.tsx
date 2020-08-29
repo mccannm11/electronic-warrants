@@ -1,17 +1,57 @@
-import React, { FC } from "react"
+import React, { FC, useContext } from "react"
 import styled from "styled-components"
+import { Pixel } from "../Types"
+import { Header } from "../typography/Header"
+import { Spacer } from "../utilities/Spacer"
+import { HR } from "../utilities/HR"
 
-const StyledPanel = styled.div`
+const StyledPanel = styled.div<PanelProps>`
   border-radius: 4px;
-  padding: 16px;
+  padding: ${(props) => props.padding}px;
   border: 1px solid #ccc;
 `
 
-/*
-  PanelHeader
-  PanelFooter
- */
+const StyledPanelHeader = styled.div<PanelProps>`
+  margin: 0 -${(props) => props.padding}px;
+  color: black;
+  opacity: 0.8;
+`
 
-const Panel: FC = (props) => <StyledPanel {...props} />
+const PanelHeader = ({ children }) => {
+  const { padding } = useContext(PanelContext)
 
-export { Panel }
+  return (
+    <StyledPanelHeader padding={padding}>
+      <div style={{ marginLeft: padding }}>
+        <Header variant="5">{children}</Header>
+      </div>
+      <Spacer height={0.5} />
+      <HR color="lightGrey" />
+      <Spacer height={1.5} />
+    </StyledPanelHeader>
+  )
+}
+
+type PanelContextProps = {
+  padding?: Pixel
+}
+
+const PanelContext = React.createContext<PanelContextProps>({})
+
+type PanelProps = {
+  padding?: Pixel
+}
+
+const Panel: FC<PanelProps> = ({ padding = 16, ...props }) => {
+  const panelContext = {
+    padding: padding
+  }
+
+  return (
+    <PanelContext.Provider value={panelContext}>
+      <StyledPanel padding={padding} {...props} />
+    </PanelContext.Provider>
+  )
+}
+
+export { Panel, PanelHeader }
