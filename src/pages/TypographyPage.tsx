@@ -1,17 +1,19 @@
-import React from "react"
+import React, { useEffect, useState } from "react"
 import { PageWithNavigationLayout } from "../layouts/PageWithNavigationLayout"
 import { PageHeader } from "../layouts/PageHeader"
-import { Page } from "../layouts/Page"
 import { Text } from "../typography/Text"
 import { LoremIpsum } from "../utilities/LoremIpsum"
 import { Spacer } from "../utilities/Spacer"
 import { HR } from "../utilities/HR"
 import { Header } from "../typography/Header"
 import { Panel } from "../surfaces/Panel"
+import { usePageLoad } from "../hooks/simulatePageLoad"
 
-const TypographyPage = () => (
-  <Page>
-    <PageWithNavigationLayout>
+const TypographyPage = () => {
+  const [pageState] = usePageLoad()
+
+  return (
+    <PageWithNavigationLayout state={pageState}>
       <PageHeader>Typography</PageHeader>
 
       <Panel>
@@ -64,7 +66,7 @@ const TypographyPage = () => (
         <Header variant="6">This is a header 6</Header>
       </Panel>
     </PageWithNavigationLayout>
-  </Page>
-)
+  )
+}
 
 export { TypographyPage }

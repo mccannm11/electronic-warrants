@@ -22,7 +22,16 @@ type HeaderProps = {
   color?: Color
   weight?: FontWeight
   children: ReactNode
+  transform?: TextTransform
 }
+
+type TextTransform =
+  | "none"
+  | "capitalize"
+  | "uppercase"
+  | "lowercase"
+  | "initial"
+  | "unset"
 
 const StyledHeader = styled.div<HeaderProps>`
   font-size: ${({ variant }) => HeaderSizeMap[variant]}rem;
@@ -31,14 +40,21 @@ const StyledHeader = styled.div<HeaderProps>`
   color: ${(props) => Colors[props.color]};
   line-height: 1.25;
   margin: 0;
+  text-transform: ${(props) => props.transform};
 `
 
-const Header: FC<HeaderProps> = ({ opacity = 80, weight = 400, ...props }) => (
+const Header: FC<HeaderProps> = ({
+  transform = "none",
+  opacity = 80,
+  weight = 400,
+  ...props
+}) => (
   <StyledHeader
     // @ts-ignore
     as={`h${props.variant}`}
     opacity={opacity}
     weight={weight}
+    transform={transform}
     {...props}
   />
 )

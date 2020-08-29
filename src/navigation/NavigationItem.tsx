@@ -3,7 +3,7 @@ import styled from "styled-components"
 import { PlaceholderImage } from "../utilities/PlaceholderImage"
 import { Spacer } from "../utilities/Spacer"
 import { Header } from "../typography/Header"
-import { Link } from "react-router-dom"
+import { Link, useLocation } from "react-router-dom"
 
 const StyledNavigationItem = styled.div<StyledNavigationLinkProps>`
   transition: all 0.15s cubic-bezier(0.8, 0, 0.1, 1);
@@ -25,7 +25,7 @@ const StyledNavigationLink = styled(Link)<StyledNavigationLinkProps>`
   text-decoration: none;
 `
 
-type NavigationItemState = "idle" | "active"
+export type NavigationItemState = "idle" | "active"
 
 type NavigationItemProps = {
   children: ReactNode
@@ -39,9 +39,9 @@ const NavigationItem: FC<NavigationItemProps> = ({
 }) => (
   <StyledNavigationLink to={to} state={state}>
     <StyledNavigationItem state={state}>
-      <PlaceholderImage width={16} height={16} />
+      <PlaceholderImage width={16} height={16} circle />
       <Spacer width={1} />
-      <Header variant="6" weight={100}>
+      <Header variant="6" weight={state === "active" ? 700 : 500}>
         {children}
       </Header>
     </StyledNavigationItem>

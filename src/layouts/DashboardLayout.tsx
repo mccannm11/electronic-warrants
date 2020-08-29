@@ -2,7 +2,7 @@ import styled from "styled-components"
 import React from "react"
 import { Pixel } from "../Types"
 
-const SidebarWidth: Pixel = 220
+const SidebarWidth: Pixel = 300
 
 const StyledDashboardLayout = styled.div`
   display: flex;

@@ -5,38 +5,52 @@ import { FormsPage } from "../pages/FormsPage"
 import React from "react"
 import { ColorsPage } from "../pages/ColorsPage"
 
-type Route = {
+export type Route = {
   path: string
   component: ComponentType<any>
   title: string
   exact: boolean
 }
 
-const Routes: Record<string, Route> = {
-  Home: {
-    path: "/",
+export type Redirect = {
+  from: string
+  to: string
+  exact: boolean
+}
+
+const Redirects: Redirect[] = [
+  {
+    from: "/",
+    to: "/home",
+    exact: true
+  }
+]
+
+const Routes: Route[] = [
+  {
+    path: "/home",
     component: HomePage,
     title: "Home",
     exact: true
   },
-  Typography: {
+  {
     path: "/typography",
     component: TypographyPage,
     title: "Typography",
     exact: false
   },
-  Forms: {
+  {
     path: "/forms",
     component: FormsPage,
     title: "Forms",
     exact: false
   },
-  Colors: {
+  {
     path: "/colors",
     component: ColorsPage,
     title: "Colors",
     exact: false
   }
-}
+]
 
-export { Routes }
+export { Routes, Redirects }
