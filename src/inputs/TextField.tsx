@@ -88,7 +88,7 @@ const StyledErrorMessage = styled.div<StyledErrorMessageProps>`
   height: 12px;
   font-size: 11px;
   margin-top: 4px;
-  margin-bottom: 32px;
+  margin-bottom: 24px;
   position: relative;
   opacity: ${(props) => (props.validationState === "valid" ? 0 : 0.7)};
   top: ${(props) => (props.validationState === "valid" ? -16 : 0)}px;
@@ -144,14 +144,13 @@ const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
           <Spacer height={1.5} />
           <StyledTextField
             {...props}
+            autoComplete="off"
             type={type}
             ref={inputRef}
             disabled={disabled}
             validationState={validationState}
             formElementState={formElementState}
             onFocus={handleInputFocus}
-            onChange={calculateFormElementState}
-            onInput={calculateFormElementState}
             onBlur={handleInputBlur}
           />
         </StyledTextFieldWrapper>
@@ -175,8 +174,6 @@ const ConnectedTextField: FC<ConnectedTextFieldProps> = ({
 }) => {
   const { register, errors } = useFormContext()
   const fieldError = errors[props.name]
-
-  useEffect(() => console.log(props.disabled))
 
   return (
     <TextField ref={register(validationRules)} error={fieldError} {...props} />

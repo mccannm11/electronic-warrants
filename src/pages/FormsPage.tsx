@@ -6,7 +6,7 @@ import { ConnectedTextField } from "../inputs/TextField"
 import styled from "styled-components"
 import { Spacer } from "../utilities/Spacer"
 import { Colors } from "../styles/Colors"
-import { Button } from "../inputs/Button"
+import { ConnectedButton } from "../inputs/Button"
 import { FormProvider, useForm } from "react-hook-form"
 import { Header } from "../typography/Header"
 import { HR } from "../utilities/HR"
@@ -33,7 +33,12 @@ const sleep = (timeout: number) =>
   })
 
 const FormsPage = () => {
-  const formMethods = useForm()
+  const formMethods = useForm({
+    mode: "onChange",
+    defaultValues: {
+      timeout: 100
+    }
+  })
   const [submitData, setSubmitData] = useState([])
 
   const handleSubmit = formMethods.handleSubmit(async (formData) => {
@@ -46,7 +51,7 @@ const FormsPage = () => {
       <PageWithNavigationLayout>
         <PageHeader>Forms</PageHeader>
         <FormProvider {...formMethods}>
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit} autoComplete="off">
             <StyledFormLayout>
               <ConnectedTextField
                 validationRules={{
@@ -78,14 +83,11 @@ const FormsPage = () => {
                 name="username"
                 defaultValue="Ronald Bringer"
               />
-              <ConnectedTextField
-                label="timout"
-                name="timeout"
-                validationRules={{ required: "Please enter a timeout value" }}
-                defaultValue={100}
-              />
+              <ConnectedTextField label="Timout" name="timeout" />
               <StyledFormFooter>
-                <Button onClick={handleSubmit}>Submit</Button>
+                <ConnectedButton color="englishViolet" onClick={handleSubmit}>
+                  Submit
+                </ConnectedButton>
               </StyledFormFooter>
             </StyledFormLayout>
 
@@ -97,11 +99,11 @@ const FormsPage = () => {
 
             <Text>
               Is Submitted:&nbsp;
-              {formMethods.formState.isSubmitted ? "true" : "false"}
+              {formMethods.formState.isSubmitted.toString()}
             </Text>
             <Text>
               Is submitting:&nbsp;
-              {formMethods.formState.isSubmitting ? "true" : "false"}
+              {formMethods.formState.isSubmitting.toString()}
             </Text>
             <Text> Submit count:&nbsp;{formMethods.formState.submitCount}</Text>
 
