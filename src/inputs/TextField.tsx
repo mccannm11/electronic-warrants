@@ -1,26 +1,20 @@
-import styled, { css } from "styled-components"
-import React, {
-  FC,
-  HTMLAttributes,
-  useEffect,
-  useImperativeHandle,
-  useRef,
-  useState
-} from "react"
-import { animate } from "../styles/Mixins"
+import React, { FC, HTMLAttributes } from "react"
+import { FieldError, useFormContext } from "react-hook-form"
+import {
+  FormElementState,
+  formFieldWrapper,
+  SharedFormFieldProps,
+  ValidationState
+} from "./formFieldWrapper"
+import styled from "styled-components"
 import { Colors } from "../styles/Colors"
-import { useFormContext } from "react-hook-form"
-import { ValidationRules } from "react-hook-form/dist/types/form"
-import { Spacer } from "../utilities/Spacer"
+import { commonFormCss } from "./commonFormCss"
+import { ConnectedFormElementProps } from "./SelectField"
 
-const commonFormCss = css`
-  caret-color: ${Colors.black40};
-`
-
-type StyledTextFieldProps = {
-  formElementState: FormElementState
+export type StyledTextFieldProps = {
   validationState: ValidationState
-}
+  formElementState: FormElementState
+} & SharedFormFieldProps
 
 const StyledTextField = styled.input<StyledTextFieldProps>`
   ${commonFormCss};
@@ -36,6 +30,10 @@ const StyledTextField = styled.input<StyledTextFieldProps>`
     props.formElementState === "open" ? Colors.black30 : Colors.black20};
 `
 
+const TextField = formFieldWrapper<HTMLInputElement, StyledTextFieldProps>(
+  StyledTextField
+)
+
 type TextFieldProps = {
   label: string
   name: string
@@ -43,128 +41,6 @@ type TextFieldProps = {
   disabled?: boolean
   error?: FieldError
 } & HTMLAttributes<HTMLInputElement>
-
-type StyledTextFieldLabelProps = {
-  formElementState: FormElementState
-  validationState: ValidationState
-}
-
-export const StyledTextFieldLabel = styled.label<StyledTextFieldLabelProps>`
-  ${animate(0.175)};
-  color: ${(props) =>
-    props.validationState === "invalid" ? Colors.errorRed : Colors.black};
-  opacity: 0.5;
-  position: absolute;
-  top: ${(props) => (props.formElementState === "open" ? 4 : 32)}px;
-  left: 0;
-  pointer-events: none;
-  font-size: ${(props) => (props.formElementState === "open" ? 12 : 14)}px;
-  font-weight: ${(props) => (props.formElementState === "open" ? 400 : 500)};
-`
-
-type StyledFormFieldWrapperProps = {
-  disabled?: boolean
-}
-
-const StyledFormFieldWrapper = styled.div<StyledFormFieldWrapperProps>`
-  position: relative;
-  cursor: ${(props) => (props.disabled ? "not-allowed" : "text")};
-`
-
-type FieldError = {
-  message: string
-}
-
-export type FormElementState = "open" | "closed"
-export type ValidationState = "valid" | "invalid"
-
-type StyledErrorMessageProps = {
-  validationState: ValidationState
-}
-
-const StyledErrorMessage = styled.div<StyledErrorMessageProps>`
-  ${animate(0.15)};
-  color: ${Colors.errorRed};
-  height: 12px;
-  font-size: 11px;
-  margin-top: 4px;
-  margin-bottom: 24px;
-  position: relative;
-  opacity: ${(props) => (props.validationState === "valid" ? 0 : 0.7)};
-  top: ${(props) => (props.validationState === "valid" ? -16 : 0)}px;
-`
-
-const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
-  ({ disabled = false, error = null, type = "text", ...props }, ref) => {
-    const wrapperRef = useRef<HTMLDivElement>()
-    const inputRef = useRef<HTMLInputElement>()
-    const [formElementState, setFormElementState] = useState<FormElementState>(
-      "closed"
-    )
-
-    const validationState: ValidationState = error ? "invalid" : "valid"
-
-    const calculateFormElementState = () =>
-      setFormElementState(
-        inputRef.current.value.length === 0 && !disabled ? "closed" : "open"
-      )
-
-    const handleInputBlur = () => calculateFormElementState()
-
-    useImperativeHandle(ref, () => inputRef.current)
-
-    useEffect(() => {
-      inputRef.current.click()
-      inputRef.current.blur()
-      calculateFormElementState()
-    }, [])
-
-    const handleWrapperClick = () => {
-      inputRef.current.focus()
-      setFormElementState("open")
-    }
-
-    const handleInputFocus = () => {
-      setFormElementState("open")
-    }
-
-    return (
-      <>
-        <StyledFormFieldWrapper
-          disabled={disabled}
-          ref={wrapperRef}
-          onClick={handleWrapperClick}
-        >
-          <StyledTextFieldLabel
-            formElementState={formElementState}
-            validationState={validationState}
-          >
-            {props.label}
-          </StyledTextFieldLabel>
-          <Spacer height={1.5} />
-          <StyledTextField
-            {...props}
-            autoComplete="off"
-            type={type}
-            ref={inputRef}
-            disabled={disabled}
-            validationState={validationState}
-            formElementState={formElementState}
-            onFocus={handleInputFocus}
-            onBlur={handleInputBlur}
-          />
-        </StyledFormFieldWrapper>
-        <StyledErrorMessage validationState={validationState}>
-          {error?.message}
-        </StyledErrorMessage>
-      </>
-    )
-  }
-)
-
-type ConnectedFormElementProps = {
-  validationRules?: ValidationRules
-}
 
 type ConnectedTextFieldProps = TextFieldProps & ConnectedFormElementProps
 
@@ -176,7 +52,9 @@ const ConnectedTextField: FC<ConnectedTextFieldProps> = ({
   const fieldError = errors[props.name]
 
   return (
+    // @ts-ignore
     <TextField ref={register(validationRules)} error={fieldError} {...props} />
   )
 }
-export { TextField, ConnectedTextField, StyledFormFieldWrapper }
+
+export { TextField, ConnectedTextField }

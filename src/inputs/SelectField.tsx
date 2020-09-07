@@ -1,39 +1,78 @@
-import React, { useState } from "react"
-import {
-  FormElementState,
-  StyledFormFieldWrapper,
-  StyledTextFieldLabel,
-  ValidationState
-} from "./TextField"
-import { Spacer } from "../utilities/Spacer"
-import { FieldError } from "react-hook-form"
+import React, { FC, HTMLAttributes } from "react"
+import { StyledTextFieldProps } from "./TextField"
+import { useFormContext } from "react-hook-form"
+import { FieldError, formFieldWrapper } from "./formFieldWrapper"
+import { ValidationRules } from "react-hook-form/dist/types/form"
+import styled from "styled-components"
+import { Colors } from "../styles/Colors"
+import { commonFormCss } from "./commonFormCss"
 
-type SelectFieldProps = {
-  disabled?: boolean
+const StyledSelectField = styled.select<StyledTextFieldProps>`
+  ${commonFormCss};
+  color: rgba(0, 0, 0, ${(props) => (props.disabled ? 0.5 : 0.7)});
+  width: 100%;
+  border: none;
+  outline: none;
+  padding: 6px 0 10px;
+  border-bottom: 1px solid #ccc;
+  pointer-events: none;
+  font-size: 16px;
+  border-bottom-color: ${(props) =>
+    props.formElementState === "open" ? Colors.black30 : Colors.black20};
+`
+
+type SelectOption = {
   label: string
-  error?: FieldError
+  id: string
 }
 
-const SelectField = React.forwardRef<HTMLSelectElement, SelectFieldProps>(
-  ({ disabled = false, ...props }, ref) => {
-    const validationState: ValidationState = props.error ? "invalid" : "valid"
+type SelectFieldProps = {
+  label: string
+  name: string
+  type?: string
+  disabled?: boolean
+  error?: FieldError
+  options: SelectOption[]
+} & HTMLAttributes<HTMLSelectElement>
 
-    const [formElementState, setFormElementState] = useState<FormElementState>(
-      "closed"
-    )
-
+const BaseSelectField = React.forwardRef<HTMLSelectElement, SelectFieldProps>(
+  ({ options, ...props }, ref) => {
     return (
-      <StyledFormFieldWrapper disabled={disabled}>
-        <StyledTextFieldLabel
-          formElementState={formElementState}
-          validationState={validationState}
-        >
-          {props.label}
-        </StyledTextFieldLabel>
-        <Spacer height={1.5} />
-      </StyledFormFieldWrapper>
+      // @ts-ignore
+      <StyledSelectField ref={ref} {...props}>
+        {options.map(({ id, label }) => (
+          <option value={id}>{label}</option>
+        ))}
+      </StyledSelectField>
     )
   }
 )
 
-export { SelectField }
+export type ConnectedFormElementProps = {
+  validationRules?: ValidationRules
+}
+
+type ConnectedSelectFieldProps = SelectFieldProps & ConnectedFormElementProps
+
+const ConnectedSelectField: FC<ConnectedSelectFieldProps> = ({
+  validationRules = {},
+  ...props
+}) => {
+  const { register, errors } = useFormContext()
+  const fieldError = errors[props.name]
+
+  return (
+    // @ts-ignore
+    <SelectField
+      ref={register(validationRules)}
+      error={fieldError}
+      {...props}
+    />
+  )
+}
+
+const SelectField = formFieldWrapper<HTMLInputElement, SelectFieldProps>(
+  BaseSelectField
+)
+
+export { SelectField, ConnectedSelectField }

@@ -1,7 +1,6 @@
 import React, { useState } from "react"
 import { PageWithNavigationLayout } from "../layouts/PageWithNavigationLayout"
 import { PageHeader } from "../layouts/PageHeader"
-import { Page } from "../layouts/Page"
 import { ConnectedTextField } from "../inputs/TextField"
 import styled from "styled-components"
 import { Spacer } from "../utilities/Spacer"
@@ -12,6 +11,7 @@ import { Header } from "../typography/Header"
 import { HR } from "../utilities/HR"
 import { Text } from "../typography/Text"
 import { $ } from "../utilities/helpers"
+import { ConnectedSelectField } from "../inputs/SelectField"
 
 const StyledFormLayout = styled.div`
   display: flex;
@@ -79,6 +79,16 @@ const FormsPage = () => {
               defaultValue="Ronald Bringer"
             />
             <ConnectedTextField label="Timout" name="timeout" />
+            <ConnectedSelectField
+              label="State"
+              name="state"
+              options={[
+                { id: "", label: "" },
+                { id: "MA", label: "Mass of two shits" },
+                { id: "VT", label: "Vermont" },
+                { id: "CT", label: "No one knows how to spell this" }
+              ]}
+            />
             <StyledFormFooter>
               <ConnectedButton color="englishViolet" onClick={handleSubmit}>
                 Submit
