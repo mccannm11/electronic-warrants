@@ -5,6 +5,7 @@ type GridProps = {
   columns: number
   padding: Rem
   minWidth?: Rem
+  grow?: boolean
 }
 
 const Grid = styled.div<GridProps>`
@@ -13,7 +14,7 @@ const Grid = styled.div<GridProps>`
   flex-wrap: wrap;
   margin: -${({ padding }) => padding}rem;
   > * {
-    flex-grow: 1;
+    flex-grow: ${({ grow }) => (grow !== undefined && grow === true ? 1 : 0)};
     min-width: ${({ minWidth = 1 }) => minWidth}rem;
     width: calc(
       ${({ columns }) => 100 / columns}% - ${({ padding }) => padding * 2}rem

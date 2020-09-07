@@ -4,7 +4,6 @@ import { PageHeader } from "../layouts/PageHeader"
 import { Text } from "../typography/Text"
 import { LoremIpsum } from "../utilities/LoremIpsum"
 import { Spacer } from "../utilities/Spacer"
-import { HR } from "../utilities/HR"
 import { Header } from "../typography/Header"
 import { Panel, PanelHeader } from "../surfaces/Panel"
 import { usePageLoad } from "../hooks/simulatePageLoad"
@@ -18,6 +17,7 @@ const TypographyPage = () => {
 
       <Panel>
         <PanelHeader>Text</PanelHeader>
+        <Spacer height={0.5} />
         <Header variant="6" weight={700}>
           Small
         </Header>

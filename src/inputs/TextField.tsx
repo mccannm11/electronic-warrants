@@ -14,9 +14,10 @@ import { ConnectedFormElementProps } from "./SelectField"
 export type StyledTextFieldProps = {
   validationState: ValidationState
   formElementState: FormElementState
-} & SharedFormFieldProps
+} & SharedFormFieldProps &
+  Partial<HTMLInputElement>
 
-const StyledTextField = styled.input<StyledTextFieldProps>`
+export const StyledTextField = styled.input<StyledTextFieldProps>`
   ${commonFormCss};
   color: rgba(0, 0, 0, ${(props) => (props.disabled ? 0.5 : 0.7)});
   width: 100%;

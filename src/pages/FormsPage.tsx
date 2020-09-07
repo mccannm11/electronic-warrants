@@ -7,9 +7,12 @@ import { Spacer } from "../utilities/Spacer"
 import { Colors } from "../styles/Colors"
 import { ConnectedButton } from "../inputs/Button"
 import { FormProvider, useForm } from "react-hook-form"
-import { Text } from "../typography/Text"
 import { $ } from "../utilities/helpers"
-import { ConnectedSelectField } from "../inputs/SelectField"
+import {
+  BaseSelectField,
+  ConnectedSelectField,
+  SelectField
+} from "../inputs/SelectField"
 import { Panel, PanelHeader } from "../surfaces/Panel"
 import { Grid } from "../utilities/Grid"
 import JSONPretty from "react-json-pretty"
@@ -94,21 +97,15 @@ const FormsPage = () => {
               ]}
             />
             <StyledFormFooter>
-              {formMethods.formState.isSubmitting && (
-                <>
-                  <Text variant="small">Submitting </Text>
-                  <Spacer width={0.5} />
-                </>
-              )}
               <ConnectedButton color="englishViolet" onClick={handleSubmit}>
-                Submit
+                {formMethods.formState.isSubmitting ? "Submitting" : "Submit"}
               </ConnectedButton>
             </StyledFormFooter>
           </StyledFormLayout>
 
           <Spacer height={4} />
 
-          <Grid columns={1} padding={1}>
+          <Grid columns={2} padding={0.75} grow>
             <Panel>
               <PanelHeader>Form state</PanelHeader>
               <Code>
@@ -125,14 +122,9 @@ const FormsPage = () => {
 
             <Panel>
               <PanelHeader>Submitted data</PanelHeader>
-              {submitData.map((data) => (
-                <>
-                  <Spacer height={1} />
-                  <Code>
-                    <JSONPretty data={data} />
-                  </Code>
-                </>
-              ))}
+              <Code>
+                <JSONPretty data={submitData} />
+              </Code>
             </Panel>
           </Grid>
 

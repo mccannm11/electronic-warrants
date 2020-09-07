@@ -42,7 +42,7 @@ type StyledErrorMessageProps = {
   validationState: ValidationState
 }
 
-const StyledErrorMessage = styled.div<StyledErrorMessageProps>`
+export const StyledErrorMessage = styled.div<StyledErrorMessageProps>`
   ${animate(0.15)};
   color: ${Colors.errorRed};
   height: 12px;
@@ -80,22 +80,26 @@ const formFieldWrapper = <
         inputRef.current.value.length === 0 && !disabled ? "closed" : "open"
       )
 
-    const handleInputBlur = () => calculateFormElementState()
+    const handleInputBlur = () => {
+      console.log("Input blur")
+      calculateFormElementState()
+    }
 
     useImperativeHandle(ref, () => inputRef.current)
 
     useEffect(() => {
-      inputRef.current.click()
-      inputRef.current.blur()
+      // inputRef.current.click()
+      // inputRef.current.blur()
       calculateFormElementState()
     }, [])
 
     const handleWrapperClick = () => {
+      console.log("HOC Wrapper click")
       inputRef.current.focus()
-      setFormElementState("open")
     }
 
     const handleInputFocus = () => {
+      console.log("Input focus")
       setFormElementState("open")
     }
 
