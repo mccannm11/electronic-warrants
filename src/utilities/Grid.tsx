@@ -4,7 +4,7 @@ import { Rem } from "../Types"
 type GridProps = {
   columns: number
   padding: Rem
-  minWidth: Rem
+  minWidth?: Rem
 }
 
 const Grid = styled.div<GridProps>`
@@ -14,7 +14,7 @@ const Grid = styled.div<GridProps>`
   margin: -${({ padding }) => padding}rem;
   > * {
     flex-grow: 1;
-    min-width: ${({ minWidth }) => minWidth}rem;
+    min-width: ${({ minWidth = 1 }) => minWidth}rem;
     width: calc(
       ${({ columns }) => 100 / columns}% - ${({ padding }) => padding * 2}rem
     );

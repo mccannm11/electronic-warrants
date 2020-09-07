@@ -7,11 +7,13 @@ import { Spacer } from "../utilities/Spacer"
 import { Colors } from "../styles/Colors"
 import { ConnectedButton } from "../inputs/Button"
 import { FormProvider, useForm } from "react-hook-form"
-import { Header } from "../typography/Header"
-import { HR } from "../utilities/HR"
 import { Text } from "../typography/Text"
 import { $ } from "../utilities/helpers"
 import { ConnectedSelectField } from "../inputs/SelectField"
+import { Panel, PanelHeader } from "../surfaces/Panel"
+import { Grid } from "../utilities/Grid"
+import JSONPretty from "react-json-pretty"
+import { Code } from "../typography/Code"
 
 const StyledFormLayout = styled.div`
   display: flex;
@@ -24,6 +26,7 @@ const StyledFormFooter = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: flex-end;
+  align-items: center;
   padding: 32px 0;
   border-bottom: 1px solid ${Colors.black20};
 `
@@ -32,14 +35,15 @@ const FormsPage = () => {
   const formMethods = useForm({
     mode: "onChange",
     defaultValues: {
-      timeout: 100
+      timeout: 1500
     }
   })
   const [submitData, setSubmitData] = useState([])
+  const watchAll = formMethods.watch()
 
   const handleSubmit = formMethods.handleSubmit(async (formData) => {
-    setSubmitData([...submitData, formData])
     await $.sleep(formData.timeout)
+    setSubmitData([...submitData, formData])
   })
 
   return (
@@ -90,6 +94,12 @@ const FormsPage = () => {
               ]}
             />
             <StyledFormFooter>
+              {formMethods.formState.isSubmitting && (
+                <>
+                  <Text variant="small">Submitting </Text>
+                  <Spacer width={0.5} />
+                </>
+              )}
               <ConnectedButton color="englishViolet" onClick={handleSubmit}>
                 Submit
               </ConnectedButton>
@@ -97,32 +107,36 @@ const FormsPage = () => {
           </StyledFormLayout>
 
           <Spacer height={4} />
-          <Header variant="3">Form state</Header>
-          <Spacer height={0.5} />
-          <HR />
-          <Spacer height={1} />
 
-          <Text>
-            Is Submitted:&nbsp;
-            {formMethods.formState.isSubmitted.toString()}
-          </Text>
-          <Text>
-            Is submitting:&nbsp;
-            {formMethods.formState.isSubmitting.toString()}
-          </Text>
-          <Text> Submit count:&nbsp;{formMethods.formState.submitCount}</Text>
+          <Grid columns={1} padding={1}>
+            <Panel>
+              <PanelHeader>Form state</PanelHeader>
+              <Code>
+                <JSONPretty data={formMethods.formState} />
+              </Code>
+            </Panel>
+
+            <Panel>
+              <PanelHeader>All watched data</PanelHeader>
+              <Code>
+                <JSONPretty data={watchAll} />
+              </Code>
+            </Panel>
+
+            <Panel>
+              <PanelHeader>Submitted data</PanelHeader>
+              {submitData.map((data) => (
+                <>
+                  <Spacer height={1} />
+                  <Code>
+                    <JSONPretty data={data} />
+                  </Code>
+                </>
+              ))}
+            </Panel>
+          </Grid>
 
           <Spacer height={4} />
-          <Header variant="3">Submitted Data</Header>
-          <Spacer height={0.5} />
-          <HR />
-          <Spacer height={1} />
-          {submitData.map((data) => (
-            <>
-              <Spacer height={1} />
-              {JSON.stringify(data)}
-            </>
-          ))}
         </form>
       </FormProvider>
     </PageWithNavigationLayout>

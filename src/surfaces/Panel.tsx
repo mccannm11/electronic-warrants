@@ -1,7 +1,7 @@
-import React, { FC, useContext } from "react"
+import React, { FC, ReactNode, useContext } from "react"
 import styled from "styled-components"
 import { Pixel } from "../Types"
-import { Header } from "../typography/Header"
+import { Header, HeaderProps } from "../typography/Header"
 import { Spacer } from "../utilities/Spacer"
 import { HR } from "../utilities/HR"
 
@@ -14,20 +14,23 @@ const StyledPanel = styled.div<PanelProps>`
 const StyledPanelHeader = styled.div<PanelProps>`
   margin: 0 -${(props) => props.padding}px;
   color: black;
-  opacity: 0.8;
 `
 
-const PanelHeader = ({ children }) => {
+type PanelHeaderProps = {
+  children: ReactNode
+} & Partial<HeaderProps>
+
+const PanelHeader: FC<PanelHeaderProps> = (props) => {
   const { padding } = useContext(PanelContext)
 
   return (
     <StyledPanelHeader padding={padding}>
       <div style={{ marginLeft: padding }}>
-        <Header variant="5">{children}</Header>
+        <Header variant="6" weight={600} opacity={80} {...props} />
       </div>
       <Spacer height={0.5} />
       <HR color="lightGrey" />
-      <Spacer height={1.5} />
+      <Spacer height={1} />
     </StyledPanelHeader>
   )
 }

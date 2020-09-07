@@ -16,7 +16,7 @@ const HeaderSizeMap: Record<HeaderVariant, Rem> = {
 
 type FontWeight = 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800
 
-type HeaderProps = {
+export type HeaderProps = {
   variant: HeaderVariant
   opacity?: Opacity
   color?: Color
@@ -44,14 +44,16 @@ const StyledHeader = styled.div<HeaderProps>`
 `
 
 const Header: FC<HeaderProps> = ({
+  variant = "4",
   transform = "none",
-  opacity = 80,
+  opacity = 90,
   weight = 400,
   ...props
 }) => (
   <StyledHeader
+    variant={variant}
     // @ts-ignore
-    as={`h${props.variant}`}
+    as={`h${variant}`}
     opacity={opacity}
     weight={weight}
     transform={transform}
