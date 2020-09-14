@@ -4,7 +4,7 @@ import { SidebarHeader } from "./SidebarHeader"
 import { PlaceholderImage } from "../utilities/PlaceholderImage"
 import { Header } from "../typography/Header"
 import { NavigationItem, NavigationItemState } from "./NavigationItem"
-import { Routes } from "../utilities/Routes"
+import { Routes } from "../Routes"
 import React, { FC } from "react"
 import { useLocation } from "react-router-dom"
 
@@ -18,7 +18,7 @@ const AppNavigation: FC = () => {
         <PlaceholderImage height={24} width={24} circle />
         <Spacer width={0.5} />
         <Header variant="5" weight={500}>
-          Brand name
+          Electronic Warrants
         </Header>
       </SidebarHeader>
       <Spacer height={1} />

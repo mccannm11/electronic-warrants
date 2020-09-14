@@ -36,7 +36,7 @@ const TextField = formFieldWrapper<HTMLInputElement, StyledTextFieldProps>(
 )
 
 type TextFieldProps = {
-  label: string
+  label?: string
   name: string
   type?: string
   disabled?: boolean

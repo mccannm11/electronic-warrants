@@ -1,27 +1,24 @@
 import React, {
   FC,
   HTMLAttributes,
-  useEffect,
   useImperativeHandle,
   useRef,
   useState
 } from "react"
-import { StyledTextField, StyledTextFieldProps } from "./TextField"
+import { StyledTextField } from "./TextField"
 import { useFormContext } from "react-hook-form"
 import {
   FieldError,
   FormElementState,
-  formFieldWrapper,
   StyledErrorMessage,
   StyledTextFieldLabel,
   ValidationState
 } from "./formFieldWrapper"
 import { ValidationRules } from "react-hook-form/dist/types/form"
 import styled from "styled-components"
-import { Colors } from "../styles/Colors"
-import { commonFormCss } from "./commonFormCss"
 import { Spacer } from "../utilities/Spacer"
 import { useDidMount } from "../hooks/useDidMount"
+import { animate } from "../styles/Mixins"
 
 type SelectOption = {
   label: string
@@ -63,20 +60,29 @@ const StyledBaseSelectFieldWrapper = styled.div`
 `
 
 const DownCarat = styled.div`
+  ${animate()};
   width: 10px;
   height: 10px;
   position: absolute;
-  right: 0;
-  border: solid #ccc;
+  right: 4px;
+  top: 32px;
+  border: solid;
+  border-color: rgba(0, 0, 0, 0.4);
   border-width: 0 3px 3px 0;
   display: inline-block;
   padding: 3px;
   transform: rotate(45deg);
   -webkit-transform: rotate(45deg);
+
+  ${StyledBaseSelectFieldWrapper}:hover & {
+    border-color: rgba(0, 0, 0, 0.6);
+  }
 `
 
 const BaseSelectField = React.forwardRef<HTMLInputElement, SelectFieldProps>(
   ({ options, name, disabled, ...props }, ref) => {
+    const wrapperRef = useRef<HTMLDivElement>()
+    const inputElementRef = useRef<HTMLInputElement>()
     const [optionsState, setOptionsState] = useState<SelectOptionsState>(
       "closed"
     )
@@ -93,20 +99,16 @@ const BaseSelectField = React.forwardRef<HTMLInputElement, SelectFieldProps>(
           : "open"
       )
 
-    useDidMount(calculateFormElementState)
-
-    const wrapperRef = useRef<HTMLDivElement>()
-
     const handleOnKeydown = (event) => event.preventDefault()
 
-    const inputElementRef = useRef<HTMLInputElement>()
+    useDidMount(calculateFormElementState)
     useImperativeHandle(ref, () => inputElementRef.current)
 
     const handleWrapperClick = (event) => {
       inputElementRef.current.focus()
 
       if (event.target === wrapperRef.current) {
-        if (optionsState == "open") {
+        if (optionsState === "open") {
           setOptionsState("closed")
         } else {
           setOptionsState("open")
@@ -136,13 +138,17 @@ const BaseSelectField = React.forwardRef<HTMLInputElement, SelectFieldProps>(
           ref={wrapperRef}
           onClick={handleWrapperClick}
         >
-          <StyledTextFieldLabel
-            formElementState={formElementState}
-            validationState={validationState}
-          >
-            {props.label}
-          </StyledTextFieldLabel>
-          <Spacer height={1.5} />
+          {props.label && (
+            <>
+              <StyledTextFieldLabel
+                formElementState={formElementState}
+                validationState={validationState}
+              >
+                {props.label}
+              </StyledTextFieldLabel>
+              <Spacer height={1.5} />
+            </>
+          )}
 
           {/* @ts-ignore */}
           <StyledTextField

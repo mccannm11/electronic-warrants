@@ -3,7 +3,7 @@ import styled from "styled-components"
 import { PlaceholderImage } from "../utilities/PlaceholderImage"
 import { Spacer } from "../utilities/Spacer"
 import { Header } from "../typography/Header"
-import { Link, useLocation } from "react-router-dom"
+import { Link } from "react-router-dom"
 
 const StyledNavigationItem = styled.div<StyledNavigationLinkProps>`
   transition: all 0.15s cubic-bezier(0.8, 0, 0.1, 1);

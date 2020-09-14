@@ -1,7 +1,7 @@
-import React, { FC, useEffect } from "react"
+import React, { FC } from "react"
 import { GlobalStyles } from "./styles/GlobalStyles"
 import { BrowserRouter, Route, Switch, Redirect } from "react-router-dom"
-import { Redirects, Routes } from "./utilities/Routes"
+import { Redirects, Routes } from "./Routes"
 import { NotFoundPage } from "./pages/NotFoundPage"
 import styled, { ThemeProvider } from "styled-components"
 import { DefaultTheme } from "./themes/defaultTheme"
@@ -54,7 +54,7 @@ const AppStateViews: Record<PageState, FC> = {
 }
 
 const App = () => {
-  const [pageState] = usePageLoad(2500)
+  const [pageState] = usePageLoad(300)
 
   return (
     <BrowserRouter>

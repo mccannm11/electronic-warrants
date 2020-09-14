@@ -1,6 +1,6 @@
-import { Opacity } from "./Types"
+import { Opacity } from "../Types"
 import styled from "styled-components"
-import { Colors } from "./styles/Colors"
+import { Colors } from "../styles/Colors"
 import React, { FC } from "react"
 
 const StyledColorGrid = styled.div`
