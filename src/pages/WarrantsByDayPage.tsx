@@ -5,9 +5,8 @@ import { useDidMount } from "../hooks/useDidMount"
 import * as d3 from "d3"
 import _ from "lodash"
 import { Text } from "../typography/Text"
-import placeholder from "lodash/fp/placeholder"
 
-const getWarrantsByDay = (records: any[]) => {
+const getWarrantsByDay = (records: WarrantRecord[]) => {
   const result: Record<string, any[]> = {}
 
   records.forEach((record) => {
@@ -23,7 +22,23 @@ const getWarrantsByDay = (records: any[]) => {
   return result
 }
 
-type ProcessedData = {}
+type WarrantRecord = any
+
+type ProcessedData = {
+  maxWarrantsPerDay: WarrantCount
+  oldestDate: Date
+  mostRecentDate: Date
+  warrantCountByDay: WarrantCount[]
+  allDatesDescending: Date[]
+  warrantsByDay: Record<string, WarrantRecord>
+}
+
+type WarrantCount = {
+  count: number
+  date: Date
+  dateString: string
+}
+
 const getProcessedData = (records): ProcessedData => {
   const warrantsByDay = getWarrantsByDay(records)
   const allDates = Object.keys(warrantsByDay).map((date) => new Date(date))
@@ -31,11 +46,7 @@ const getProcessedData = (records): ProcessedData => {
     .slice()
     .sort((a, b) => a.getTime() - b.getTime())
 
-  const warrantCountByDay: {
-    count: number
-    date: Date
-    dateString: string
-  }[] = allDatesDescending.map((date) => ({
+  const warrantCountByDay: WarrantCount[] = allDatesDescending.map((date) => ({
     count: warrantsByDay[date.toDateString()].length,
     date: date,
     dateString: date.toDateString()
@@ -64,6 +75,7 @@ const WarrantsByDayChart = () => {
 
   const svgRef = useRef<SVGSVGElement>(null)
   const [records, setRecords] = useState<any[]>(null)
+  const [processedData, setProcessedData] = useState<ProcessedData>(null)
 
   useDidMount(() => {
     const fetchWarrantData = async () => {
@@ -74,74 +86,100 @@ const WarrantsByDayChart = () => {
       }))
 
       setRecords(normalizedRecords)
+      const processedData = getProcessedData(normalizedRecords)
+      setProcessedData(processedData)
     }
 
     fetchWarrantData()
   })
 
-  useDidMount(() => {
-    const processedData = getProcessedData(records)
-  })
+  if (!processedData) return null
 
-  useEffect(() => {
-    if (records === null) return
-    if (svgRef.current === null) return
+  const {
+    maxWarrantsPerDay,
+    oldestDate,
+    mostRecentDate,
+    warrantCountByDay,
+    allDatesDescending,
+    warrantsByDay
+  } = processedData
 
-    const svg = d3.select(svgRef.current)
-    svg.attr("viewBox", `0 0 ${chartWidth} ${chartHeight}`)
+  const y = d3
+    .scaleLinear()
+    .domain([0, maxWarrantsPerDay.count])
+    .range([chartHeight, chartMargin + 200])
 
-    const y = d3
-      .scaleLinear()
-      .domain([0, maxWarrantsPerDay.count])
-      .range([chartHeight, chartMargin + 200])
+  const x = d3
+    .scaleTime()
+    .domain([d3.timeMonth.floor(oldestDate), mostRecentDate])
+    .range([0, chartWidth - chartMargin])
 
-    svg
-      .append("g")
-      .attr("transform", `translate(${chartMargin}, -${chartMargin})`)
-      .call(
-        d3
-          .axisLeft(y)
-          .tickSizeOuter(0)
-          .tickFormat((x) => x.toString())
-      )
+  const yTicks = y.ticks()
 
-    const x = d3
-      .scaleTime()
-      .domain([d3.timeMonth.floor(oldestDate), mostRecentDate])
-      .range([0, chartWidth - chartMargin])
+  const xTicks = x.ticks(d3.timeMonth.every(1))
 
-    const xAxis = svg
-      .select("g.x-axis")
-      .append("g")
-      .attr(
-        "transform",
-        `translate(${chartMargin}, ${chartHeight - chartMargin})`
-      )
-      .call(
-        d3
-          .axisBottom(x)
-          .ticks(d3.timeMonth.every(1))
-          .tickFormat(d3.timeFormat("%B"))
-      )
-      .selectAll("text")
-      .style("text-anchor", "end")
-      .attr("dx", "-.8em")
-      .attr("dy", ".15em")
-      .attr("transform", "rotate(-65)")
+  console.log("yTicks", yTicks)
+  console.log("xTicks", xTicks)
 
-    const bars = svg
-      .append("g")
-      .attr("class", "x-axis")
-      .attr("fill", "steelblue")
-      .selectAll("rect")
-      .data(warrantCountByDay)
-      .join("rect")
-      .style("mix-blend-mode", "multiply")
-      .attr("x", (d) => x(d.date) + chartMargin)
-      .attr("y", (d) => y(d.count) - chartMargin)
-      .attr("height", (d) => y(0) - y(d.count))
-      .attr("width", "3")
-  }, [records, startDate])
+  // useEffect(() => {
+  //   if (records === null) return
+  //   if (svgRef.current === null) return
+  //   // return
+  //
+  //   const svg = d3.select(svgRef.current)
+  //   svg.attr("viewBox", `0 0 ${chartWidth} ${chartHeight}`)
+  //
+  //   const y = d3
+  //     .scaleLinear()
+  //     .domain([0, maxWarrantsPerDay.count])
+  //     .range([chartHeight, chartMargin + 200])
+  //
+  //   svg
+  //     .append("g")
+  //     .attr("transform", `translate(${chartMargin}, -${chartMargin})`)
+  //     .call(
+  //       d3
+  //         .axisLeft(y)
+  //         .tickSizeOuter(0)
+  //         .tickFormat((x) => x.toString())
+  //     )
+  //
+  //   const x = d3
+  //     .scaleTime()
+  //     .domain([d3.timeMonth.floor(oldestDate), mostRecentDate])
+  //     .range([0, chartWidth - chartMargin])
+  //
+  //   const xAxis = svg
+  //     .append("g")
+  //     .attr(
+  //       "transform",
+  //       `translate(${chartMargin}, ${chartHeight - chartMargin})`
+  //     )
+  //     .call(
+  //       d3
+  //         .axisBottom(x)
+  //         .ticks(d3.timeMonth.every(1))
+  //         .tickFormat(d3.timeFormat("%B"))
+  //     )
+  //     .selectAll("text")
+  //     .style("text-anchor", "end")
+  //     .attr("dx", "-.8em")
+  //     .attr("dy", ".15em")
+  //     .attr("transform", "rotate(-65)")
+  //
+  //   const bars = svg
+  //     .append("g")
+  //     .attr("class", "x-axis")
+  //     .attr("fill", "steelblue")
+  //     .selectAll("rect")
+  //     .data(warrantCountByDay)
+  //     .join("rect")
+  //     .style("mix-blend-mode", "multiply")
+  //     .attr("x", (d) => x(d.date) + chartMargin)
+  //     .attr("y", (d) => y(d.count) - chartMargin)
+  //     .attr("height", (d) => y(0) - y(d.count))
+  //     .attr("width", "3")
+  // }, [records, startDate])
 
   const handleHeightChange = (event) => {
     setChartHeight(event.target.value)
@@ -155,19 +193,71 @@ const WarrantsByDayChart = () => {
     setStartDate(new Date(event.target.value))
   }
 
+  const barWidth = 3
+
   return (
     <>
-      <svg ref={svgRef} height={chartHeight} width={chartWidth} />
+      <svg ref={svgRef} height={chartHeight} width={chartWidth}>
+        <g
+          className="y-axis"
+          transform={`translate(${chartMargin}, -${chartMargin})`}
+        >
+          <line
+            x1={0}
+            y1={y(maxWarrantsPerDay.count)}
+            x2={0}
+            y2={y(0)}
+            stroke="black"
+            width={1}
+          />
+          {yTicks.map((tick) => (
+            <text x={-20} y={y(tick)}>
+              {tick}
+            </text>
+          ))}
+        </g>
+        <g
+          className="x-axis"
+          transform={`translate(${chartMargin}, -${chartMargin})`}
+        >
+          <line
+            x1={0}
+            y1={y(0)}
+            x2={x(mostRecentDate)}
+            y2={y(0)}
+            stroke="black"
+            width={1}
+          />
+
+          {xTicks.map((tick) => (
+            <text transform={`translate(${x(tick)}, ${y(0) + 14}) rotate(45)`}>
+              {d3.timeFormat("%B")(tick)}
+            </text>
+          ))}
+        </g>
+
+        {warrantCountByDay.map((warrantCount) => (
+          <g className="bar">
+            <rect
+              fill="black"
+              width={barWidth}
+              height={y(0) - y(warrantCount.count)}
+              x={x(warrantCount.date) + chartMargin}
+              y={y(warrantCount.count) - chartMargin}
+            />
+          </g>
+        ))}
+      </svg>
       <div>
         <Text variant="small">Height</Text>
         <input
           type="range"
-          min={100}
+          min={500}
           max={2500}
           onChange={handleHeightChange}
         />
         <Text variant="small">Width</Text>
-        <input type="range" min={100} max={2500} onChange={handleWidthChange} />
+        <input type="range" min={500} max={2500} onChange={handleWidthChange} />
         <Text variant="small">Start date</Text>
         <input type="date" onChange={handleStartDateChange} />
       </div>
