@@ -4,6 +4,8 @@ import React, { useEffect, useRef, useState } from "react"
 import { useDidMount } from "../hooks/useDidMount"
 import * as d3 from "d3"
 import _ from "lodash"
+import { Text } from "../typography/Text"
+import placeholder from "lodash/fp/placeholder"
 
 const getWarrantsByDay = (records: any[]) => {
   const result: Record<string, any[]> = {}
@@ -21,9 +23,43 @@ const getWarrantsByDay = (records: any[]) => {
   return result
 }
 
+type ProcessedData = {}
+const getProcessedData = (records): ProcessedData => {
+  const warrantsByDay = getWarrantsByDay(records)
+  const allDates = Object.keys(warrantsByDay).map((date) => new Date(date))
+  const allDatesDescending = allDates
+    .slice()
+    .sort((a, b) => a.getTime() - b.getTime())
+
+  const warrantCountByDay: {
+    count: number
+    date: Date
+    dateString: string
+  }[] = allDatesDescending.map((date) => ({
+    count: warrantsByDay[date.toDateString()].length,
+    date: date,
+    dateString: date.toDateString()
+  }))
+
+  const maxWarrantsPerDay = _.maxBy(warrantCountByDay, (day) => day.count)
+  const oldestDate = _.head(allDatesDescending)
+  const mostRecentDate = _.last(allDatesDescending)
+
+  return {
+    maxWarrantsPerDay,
+    oldestDate,
+    mostRecentDate,
+    warrantCountByDay,
+    allDatesDescending,
+    warrantsByDay
+  }
+}
+
 const WarrantsByDayChart = () => {
-  const chartWidth = 1000
-  const chartHeight = 500
+  const [chartHeight, setChartHeight] = useState(500)
+  const [chartWidth, setChartWidth] = useState(1000)
+  const [startDate, setStartDate] = useState(null)
+
   const chartMargin = 100
 
   const svgRef = useRef<SVGSVGElement>(null)
@@ -43,49 +79,23 @@ const WarrantsByDayChart = () => {
     fetchWarrantData()
   })
 
+  useDidMount(() => {
+    const processedData = getProcessedData(records)
+  })
+
   useEffect(() => {
-    if (svgRef.current === null) return
-    const svg = d3.select(svgRef.current)
-
-    svg.attr("viewBox", "0 0 500 500")
-
-    console.log("Data changed", records)
     if (records === null) return
+    if (svgRef.current === null) return
 
-    const warrantsByDay = getWarrantsByDay(records)
-    console.log("warrantsByDay", warrantsByDay)
-
-    const allDates = Object.keys(warrantsByDay).map((date) => new Date(date))
-    const allDatesDescending = allDates
-      .slice()
-      .sort((a, b) => a.getTime() - b.getTime())
-
-    console.log(allDatesDescending)
-    allDatesDescending.forEach((date) => {
-      console.log(date)
-    })
-
-    const warrantCountByDay: {
-      count: number
-      date: Date
-      dateString: string
-    }[] = allDatesDescending.map((date) => ({
-      count: warrantsByDay[date.toDateString()].length,
-      date: date,
-      dateString: date.toDateString()
-    }))
-
-    console.log("Warrant counts by day", warrantCountByDay)
-
-    const maxWarrantsPerDay = _.maxBy(warrantCountByDay, (day) => day.count)
-    console.log("Max warrants per day:", maxWarrantsPerDay)
+    const svg = d3.select(svgRef.current)
+    svg.attr("viewBox", `0 0 ${chartWidth} ${chartHeight}`)
 
     const y = d3
       .scaleLinear()
       .domain([0, maxWarrantsPerDay.count])
       .range([chartHeight, chartMargin + 200])
 
-    const yAxis = svg
+    svg
       .append("g")
       .attr("transform", `translate(${chartMargin}, -${chartMargin})`)
       .call(
@@ -95,15 +105,13 @@ const WarrantsByDayChart = () => {
           .tickFormat((x) => x.toString())
       )
 
-    const oldestDate = _.head(allDatesDescending)
-    const mostRecentDate = _.last(allDatesDescending)
-
     const x = d3
       .scaleTime()
       .domain([d3.timeMonth.floor(oldestDate), mostRecentDate])
       .range([0, chartWidth - chartMargin])
 
     const xAxis = svg
+      .select("g.x-axis")
       .append("g")
       .attr(
         "transform",
@@ -133,9 +141,38 @@ const WarrantsByDayChart = () => {
       .attr("y", (d) => y(d.count) - chartMargin)
       .attr("height", (d) => y(0) - y(d.count))
       .attr("width", "3")
-  }, [records])
+  }, [records, startDate])
 
-  return <svg ref={svgRef} height={chartHeight} width={chartWidth} />
+  const handleHeightChange = (event) => {
+    setChartHeight(event.target.value)
+  }
+
+  const handleWidthChange = (event) => {
+    setChartWidth(event.target.value)
+  }
+
+  const handleStartDateChange = (event) => {
+    setStartDate(new Date(event.target.value))
+  }
+
+  return (
+    <>
+      <svg ref={svgRef} height={chartHeight} width={chartWidth} />
+      <div>
+        <Text variant="small">Height</Text>
+        <input
+          type="range"
+          min={100}
+          max={2500}
+          onChange={handleHeightChange}
+        />
+        <Text variant="small">Width</Text>
+        <input type="range" min={100} max={2500} onChange={handleWidthChange} />
+        <Text variant="small">Start date</Text>
+        <input type="date" onChange={handleStartDateChange} />
+      </div>
+    </>
+  )
 }
 
 const WarrantsByDay = () => (
