@@ -11,6 +11,7 @@ const StyledDashboardLayout = styled.div`
   height: 100%;
   position: relative;
   margin-left: ${SidebarWidth}px;
+  z-index: 1;
 `
 
 const StyledSidebarContent = styled.div`
@@ -21,6 +22,7 @@ const StyledSidebarContent = styled.div`
   top: 0;
   bottom: 0;
   left: 0;
+  z-index: 2;
 `
 
 const StyledMainContent = styled.div`

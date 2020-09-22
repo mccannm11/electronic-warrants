@@ -25,11 +25,11 @@ const AppNavigation: FC = () => {
 
       {Object.keys(Routes).map((routeKey) => {
         const route = Routes[routeKey]
-        const state: NavigationItemState = location.pathname.startsWith(
-          route.path
-        )
-          ? "active"
-          : "idle"
+        const state: NavigationItemState =
+          location.pathname === route.path ||
+          location.pathname.startsWith(`${route.path}/`)
+            ? "active"
+            : "idle"
 
         return (
           <NavigationItem key={route.path} to={route.path} state={state}>

@@ -1,6 +1,10 @@
 import { ComponentType } from "react"
 import { CsvDataPage } from "./pages/CsvDataPage"
 import { WarrantsByDay } from "./pages/WarrantsByDayPage"
+import { WarrantsByCity } from "./pages/WarrantsByCityPage"
+import { WarrantsByNature } from "./pages/WarrantsByNature"
+import { WarrantsByDayByNature } from "./pages/WarrantsByDayByNature"
+import { WarrantsByDayByNatureLines } from "./pages/WarrantsByDayByNatureLines"
 
 export type Route = {
   path: string
@@ -26,6 +30,30 @@ const Routes: Route[] = [
     path: "/by-day",
     component: WarrantsByDay,
     title: "Warrants by day",
+    exact: true
+  },
+  {
+    path: "/by-city",
+    component: WarrantsByCity,
+    title: "Warrants by city",
+    exact: true
+  },
+  {
+    path: "/by-nature",
+    component: WarrantsByNature,
+    title: "Warrants by nature",
+    exact: true
+  },
+  {
+    path: "/by-day-by-nature",
+    component: WarrantsByDayByNature,
+    title: "Warrants by day and nature",
+    exact: true
+  },
+  {
+    path: "/by-day-by-nature-lines",
+    component: WarrantsByDayByNatureLines,
+    title: "Day and nature lines",
     exact: true
   }
 ]

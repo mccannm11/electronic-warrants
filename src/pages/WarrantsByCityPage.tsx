@@ -4,38 +4,40 @@ import React from "react"
 import * as d3 from "d3"
 import { useWarrantData } from "./useWarrantData"
 
-const WarrantsByDayChart = () => {
+const WarrantsByCityChart = () => {
   const chartHeight = 750
-  const chartWidth = 1250
-  const chartMargin = 200
-  const barWidth = 4
+  const chartWidth = 1500
+  const chartMargin = 100
 
   const { processedData } = useWarrantData()
   if (!processedData) return null
 
   const {
-    maxWarrantsPerDay,
-    oldestDate,
-    mostRecentDate,
-    warrantCountByDay
+    warrantsByCity,
+    allCities,
+    maxWarrantsOfCity,
+    allCitiesByWarrantCountDescending
   } = processedData
 
   const y = d3
     .scaleLinear()
-    .domain([0, maxWarrantsPerDay.count])
-    .range([chartHeight, chartMargin + 200])
+    .domain([0, maxWarrantsOfCity])
+    .range([chartHeight, chartMargin])
 
   const x = d3
-    .scaleTime()
-    .domain([d3.timeMonth.floor(oldestDate), mostRecentDate])
-    .range([0, chartWidth - chartMargin])
+    .scaleBand()
+    .domain(allCitiesByWarrantCountDescending)
+    .range([0, chartWidth - chartMargin * 2])
 
-  const colorScale = d3
-    .scaleSequential(d3.interpolateBrBG)
-    .domain([0, chartWidth - chartMargin])
+  const xColorScale = d3.scaleSequential(d3.interpolatePiYG).domain(x.range())
+  const yColorScale = d3
+    .scaleSequential(d3.interpolateBlues)
+    .domain([chartMargin, chartHeight])
 
   const yTicks = y.ticks()
-  const xTicks = x.ticks(d3.timeMonth.every(1))
+
+  const barWidth = 30
+  const barLeftPadding = 2
 
   return (
     <>
@@ -46,14 +48,14 @@ const WarrantsByDayChart = () => {
         >
           <line
             x1={0}
-            y1={y(maxWarrantsPerDay.count)}
+            y1={y(maxWarrantsOfCity)}
             x2={0}
             y2={y(0)}
             stroke="black"
             width={1}
           />
           {yTicks.map((tick) => (
-            <text x={-20} y={y(tick)}>
+            <text x={-30} y={y(tick)}>
               {tick}
             </text>
           ))}
@@ -65,27 +67,31 @@ const WarrantsByDayChart = () => {
           <line
             x1={0}
             y1={y(0)}
-            x2={x(mostRecentDate)}
+            x2={x(allCities[allCities.length - 1]) + barLeftPadding}
             y2={y(0)}
             stroke="black"
             width={1}
           />
 
-          {xTicks.map((tick) => (
-            <text transform={`translate(${x(tick)}, ${y(0) + 14}) rotate(45)`}>
-              {d3.timeFormat("%B")(tick)}
+          {allCities.map((city) => (
+            <text
+              transform={`translate(${x(city) + barLeftPadding}, ${
+                y(0) + 14
+              }) rotate(45)`}
+            >
+              {city}
             </text>
           ))}
         </g>
 
-        {warrantCountByDay.map((warrantCount) => (
+        {allCities.map((city) => (
           <g className="bar">
             <rect
-              fill={colorScale(x(warrantCount.date))}
+              fill={xColorScale(x(city))}
               width={barWidth}
-              height={y(0) - y(warrantCount.count) - 1}
-              x={x(warrantCount.date) + chartMargin}
-              y={y(warrantCount.count) - chartMargin}
+              height={y(0) - y(warrantsByCity[city].count) - 1}
+              x={x(city) + chartMargin + barLeftPadding}
+              y={y(warrantsByCity[city].count) - chartMargin}
             />
           </g>
         ))}
@@ -94,11 +100,11 @@ const WarrantsByDayChart = () => {
   )
 }
 
-const WarrantsByDay = () => (
+const WarrantsByCity = () => (
   <PageWithNavigationLayout>
-    <PageHeader>Warrants by day</PageHeader>
-    <WarrantsByDayChart />
+    <PageHeader>Warrants by city</PageHeader>
+    <WarrantsByCityChart />
   </PageWithNavigationLayout>
 )
 
-export { WarrantsByDay }
+export { WarrantsByCity }
