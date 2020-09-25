@@ -5,6 +5,7 @@ import { WarrantsByCity } from "./pages/WarrantsByCityPage"
 import { WarrantsByNature } from "./pages/WarrantsByNature"
 import { WarrantsByDayByNature } from "./pages/WarrantsByDayByNature"
 import { WarrantsByDayByNatureLines } from "./pages/WarrantsByDayByNatureLines"
+import { WarrantsByNatureStackedArea } from "./pages/WarrantsByNatureStackedArea"
 
 export type Route = {
   path: string
@@ -54,6 +55,12 @@ const Routes: Route[] = [
     path: "/by-day-by-nature-lines",
     component: WarrantsByDayByNatureLines,
     title: "Day and nature lines",
+    exact: true
+  },
+  {
+    path: "/by-nature-by-day-area",
+    component: WarrantsByNatureStackedArea,
+    title: "By nature area stacked",
     exact: true
   }
 ]

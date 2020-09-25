@@ -1,15 +1,12 @@
 import { PageWithNavigationLayout } from "../layouts/PageWithNavigationLayout"
 import { PageHeader } from "../layouts/PageHeader"
-import React, { useRef, useState } from "react"
-import { useDidMount } from "../hooks/useDidMount"
+import React from "react"
 import * as d3 from "d3"
-import { Text } from "../typography/Text"
-import { getProcessedData, ProcessedData } from "./getProcessedData"
 import { useWarrantData } from "./useWarrantData"
 
-const WarrantsByNatureChart = () => {
+const WarrantsByNatureStackedAreaChart = () => {
   const chartHeight = 750
-  const chartWidth = 1000
+  const chartWidth = 1500
   const chartMargin = 200
   const barWidth = 20
   const barLeftPadding = 10
@@ -18,22 +15,58 @@ const WarrantsByNatureChart = () => {
   if (!processedData) return null
 
   const {
-    warrantsByNature,
-    maxWarrantsOfNature,
-    allNaturesByWarrantCountDescending
+    allNaturesIncludingOther,
+    warrantsByDateGroupedByNature,
+    allDatesDescending,
+    oldestDate,
+    mostRecentDate,
+    maxWarrantsPerDay
   } = processedData
 
   const y = d3
     .scaleLinear()
-    .domain([0, maxWarrantsOfNature])
+    .domain([0, maxWarrantsPerDay.count])
     .range([chartHeight, chartMargin * 2])
 
   const x = d3
-    .scaleBand()
-    .domain(allNaturesByWarrantCountDescending)
-    .range([0, chartWidth - chartMargin * 2])
+    .scaleTime()
+    .domain([d3.timeMonth.floor(oldestDate), mostRecentDate])
+    .range([0, chartWidth - chartMargin])
 
   const yTicks = y.ticks()
+
+  const warrantsByDateGroupedByNatureArray = Object.keys(
+    warrantsByDateGroupedByNature
+  ).map((date) => {
+    return {
+      date,
+      ...warrantsByDateGroupedByNature[date]
+    }
+  })
+
+  console.group("This is what you're looking for")
+  console.log(allNaturesIncludingOther)
+  console.log(warrantsByDateGroupedByNatureArray)
+  console.groupEnd()
+
+  const series = d3.stack().keys(allNaturesIncludingOther)(
+    warrantsByDateGroupedByNatureArray
+  )
+
+  console.log("series", series)
+
+  const colorScale = d3
+    .scaleSequential(d3.interpolateRainbow)
+    .domain([allNaturesIncludingOther.length - 1, 0])
+
+  const barColors = d3
+    .scaleOrdinal()
+    .domain(allNaturesIncludingOther)
+    .range(
+      [...new Array(allNaturesIncludingOther.length)].map((i, j) =>
+        colorScale(j)
+      )
+    )
 
   return (
     <>
@@ -44,7 +77,7 @@ const WarrantsByNatureChart = () => {
         >
           <line
             x1={0}
-            y1={y(maxWarrantsOfNature + 10)}
+            y1={y(maxWarrantsPerDay.count + 10)}
             x2={0}
             y2={y(0)}
             stroke="black"
@@ -63,50 +96,38 @@ const WarrantsByNatureChart = () => {
           <line
             x1={0}
             y1={y(0)}
-            x2={x(
-              allNaturesByWarrantCountDescending[
-                allNaturesByWarrantCountDescending.length - 1
-              ]
-            )}
+            x2={x(allDatesDescending[allDatesDescending.length - 1])}
             y2={y(0)}
             stroke="black"
             width={1}
           />
-
-          {allNaturesByWarrantCountDescending.map((nature) => (
-            <text
-              transform={`translate(${x(nature) + barLeftPadding}, ${
-                y(0) + 14
-              }) rotate(45)`}
-            >
-              {nature}
-            </text>
-          ))}
         </g>
 
-        {allNaturesByWarrantCountDescending.map((nature) => {
-          return (
-            <g className="bar">
-              <rect
-                fill="black"
-                width={barWidth}
-                height={y(0) - y(warrantsByNature[nature].count)}
-                x={x(nature) + chartMargin + barLeftPadding}
-                y={y(warrantsByNature[nature].count) - chartMargin}
-              />
-            </g>
-          )
+        {series.map((s) => {
+          let color = barColors(s.key) as string
+          if (s.key === "Other") {
+            color = "yellow"
+          }
+
+          const line = d3
+            .area()
+            .x((d) => x(new Date(d.data.date)) + chartMargin)
+            .y0((d) => y(d[0]) - chartMargin)
+            .y1((d) => y(d[1]) - chartMargin)
+            .curve(d3.curveMonotoneX)
+
+          return <path fill={color} d={line(s as any)} />
         })}
       </svg>
     </>
   )
 }
 
-const WarrantsByNature = () => (
+const WarrantsByNatureStackedArea = () => (
   <PageWithNavigationLayout>
-    <PageHeader>Warrants by nature</PageHeader>
-    <WarrantsByNatureChart />
+    <PageHeader>Warrants by nature stacked area</PageHeader>
+    <WarrantsByNatureStackedAreaChart />
   </PageWithNavigationLayout>
 )
 
-export { WarrantsByNature }
+export { WarrantsByNatureStackedArea }
