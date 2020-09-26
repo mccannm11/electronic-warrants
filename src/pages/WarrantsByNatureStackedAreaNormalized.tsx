@@ -92,10 +92,6 @@ const WarrantsByNatureStackedAreaChartNormalized = () => {
 
         {series.map((s) => {
           let color = barColors(s.key) as string
-          if (s.key === "Other") {
-            color = "yellow"
-          }
-
           const line = d3
             .area()
             .x((d) => x(new Date(d.data.date)) + chartMargin)

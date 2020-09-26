@@ -5,6 +5,7 @@ import * as d3 from "d3"
 
 export const useWarrantData = () => {
   const [processedData, setProcessedData] = useState<ProcessedData>(null)
+  const [records, setRecords] = useState<ProcessedData>(null)
 
   useDidMount(() => {
     const fetchWarrantData = async () => {
@@ -16,9 +17,10 @@ export const useWarrantData = () => {
 
       const processedData = getProcessedData(normalizedRecords)
       setProcessedData(processedData)
+      setRecords(normalizedRecords)
     }
     fetchWarrantData()
   })
 
-  return { processedData }
+  return { processedData, records }
 }
