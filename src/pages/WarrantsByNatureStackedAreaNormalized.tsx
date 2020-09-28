@@ -5,11 +5,14 @@ import * as d3 from "d3"
 import { useWarrantData } from "./useWarrantData"
 
 const WarrantsByNatureStackedAreaChartNormalized = () => {
-  const chartHeight = 750
-  const chartWidth = 1500
-  const chartMargin = 50
-  const barWidth = 20
-  const barLeftPadding = 10
+  const chartHeight = 750,
+    chartWidth = 1500,
+    margin = {
+      top: 5,
+      right: 50,
+      bottom: 50,
+      left: 50
+    }
 
   const { processedData } = useWarrantData()
   if (!processedData) return null
@@ -17,21 +20,19 @@ const WarrantsByNatureStackedAreaChartNormalized = () => {
   const {
     allNaturesIncludingOther,
     warrantsByDateGroupedByNature,
-    allDatesDescending,
     oldestDate,
-    mostRecentDate,
-    maxWarrantsPerDay
+    mostRecentDate
   } = processedData
 
   const y = d3
     .scaleLinear()
     .domain([0, 1])
-    .range([chartHeight, chartMargin * 2])
+    .range([chartHeight + margin.top, margin.top])
 
   const x = d3
     .scaleTime()
     .domain([d3.timeMonth.floor(oldestDate), mostRecentDate])
-    .range([0, chartWidth - chartMargin])
+    .range([margin.left, chartWidth + margin.left])
 
   const yTicks = y.ticks()
 
@@ -63,46 +64,48 @@ const WarrantsByNatureStackedAreaChartNormalized = () => {
     )
 
   return (
-    <>
-      <svg height={chartHeight} width={chartWidth}>
-        <g
-          className="y-axis"
-          transform={`translate(${chartMargin}, -${chartMargin})`}
-        >
-          <line x1={0} y1={y(1)} x2={0} y2={y(0)} stroke="black" width={1} />
-          {yTicks.map((tick) => (
-            <text x={-45} y={y(tick) + 7}>
-              {tick * 100}%
-            </text>
-          ))}
-        </g>
-        <g
-          className="x-axis"
-          transform={`translate(${chartMargin}, -${chartMargin})`}
-        >
-          <line
-            x1={0}
-            y1={y(0)}
-            x2={x(allDatesDescending[allDatesDescending.length - 1])}
-            y2={y(0)}
-            stroke="black"
-            width={1}
-          />
-        </g>
+    <svg
+      height={chartHeight + margin.top + margin.bottom}
+      width={chartWidth + margin.right + margin.left}
+    >
+      <g className="y-axis">
+        <line
+          x1={x.range()[0]}
+          y1={y.range()[1]}
+          x2={x.range()[0]}
+          y2={y.range()[0]}
+          stroke="black"
+          width={1}
+        />
+        {yTicks.map((tick) => (
+          <text x={0} y={y(tick) + 7}>
+            {tick * 100}%
+          </text>
+        ))}
+      </g>
+      <g className="x-axis">
+        <line
+          x1={x.range()[0]}
+          x2={x.range()[1]}
+          y1={y.range()[0]}
+          y2={y.range()[0]}
+          stroke="black"
+          width={1}
+        />
+      </g>
 
-        {series.map((s) => {
-          let color = barColors(s.key) as string
-          const line = d3
-            .area()
-            .x((d) => x(new Date(d.data.date)) + chartMargin)
-            .y0((d) => y(d[0]) - chartMargin)
-            .y1((d) => y(d[1]) - chartMargin)
-            .curve(d3.curveMonotoneX)
+      {series.map((s) => {
+        let color = barColors(s.key) as string
+        const line = d3
+          .area()
+          .x((d) => x(new Date(d.data.date)))
+          .y0((d) => y(d[0]))
+          .y1((d) => y(d[1]))
+          .curve(d3.curveMonotoneX)
 
-          return <path fill={color} d={line(s as any)} />
-        })}
-      </svg>
-    </>
+        return <path fill={color} d={line(s as any)} />
+      })}
+    </svg>
   )
 }
 

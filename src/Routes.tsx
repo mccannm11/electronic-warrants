@@ -9,6 +9,7 @@ import { WarrantsByNatureStackedAreaNormalized } from "./pages/WarrantsByNatureS
 import { WarrantsByNatureStackedArea } from "./pages/WarrantsByNatureStackedArea"
 import { WarrantsByCityVertical } from "./pages/WarrantsByCityVertical"
 import { WarrantsByCityVerticalNormalized } from "./pages/WarrantsByCityVerticalNormalized"
+import { WarrantsByCityDonut } from "./pages/WarrantsByCityDonut"
 
 export type Route = {
   path: string
@@ -82,6 +83,12 @@ const Routes: Route[] = [
     path: "/by-city-by-nature-normalized",
     component: WarrantsByCityVerticalNormalized,
     title: "By city by nature norm",
+    exact: true
+  },
+  {
+    path: "/by-city-donut",
+    component: WarrantsByCityDonut,
+    title: "By city donut",
     exact: true
   }
 ]
