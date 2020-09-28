@@ -8,8 +8,13 @@ const WarrantsByNatureStackedAreaChart = () => {
   const chartHeight = 750
   const chartWidth = 1500
   const chartMargin = 200
-  const barWidth = 20
-  const barLeftPadding = 10
+
+  const margin = {
+    top: 10,
+    right: 200,
+    bottom: 200,
+    left: 50
+  }
 
   const { processedData } = useWarrantData()
   if (!processedData) return null
@@ -17,7 +22,6 @@ const WarrantsByNatureStackedAreaChart = () => {
   const {
     allNaturesIncludingOther,
     warrantsByDateGroupedByNature,
-    allDatesDescending,
     oldestDate,
     mostRecentDate,
     maxWarrantsPerDay
@@ -26,12 +30,12 @@ const WarrantsByNatureStackedAreaChart = () => {
   const y = d3
     .scaleLinear()
     .domain([0, maxWarrantsPerDay.count])
-    .range([chartHeight, chartMargin * 2])
+    .range([chartHeight + margin.top, margin.top])
 
   const x = d3
     .scaleTime()
     .domain([d3.timeMonth.floor(oldestDate), mostRecentDate])
-    .range([0, chartWidth - chartMargin])
+    .range([margin.left, chartWidth + margin.left])
 
   const yTicks = y.ticks()
 
@@ -44,16 +48,9 @@ const WarrantsByNatureStackedAreaChart = () => {
     }
   })
 
-  console.group("This is what you're looking for")
-  console.log(allNaturesIncludingOther)
-  console.log(warrantsByDateGroupedByNatureArray)
-  console.groupEnd()
-
   const series = d3.stack().keys(allNaturesIncludingOther)(
     warrantsByDateGroupedByNatureArray
   )
-
-  console.log("series", series)
 
   const colorScale = d3
     .scaleSequential(d3.interpolateRainbow)
@@ -68,58 +65,60 @@ const WarrantsByNatureStackedAreaChart = () => {
       )
     )
 
+  const xTicks = x.ticks(d3.timeMonth.every(1))
+
   return (
-    <>
-      <svg height={chartHeight} width={chartWidth}>
-        <g
-          className="y-axis"
-          transform={`translate(${chartMargin}, -${chartMargin})`}
-        >
-          <line
-            x1={0}
-            y1={y(maxWarrantsPerDay.count + 10)}
-            x2={0}
-            y2={y(0)}
-            stroke="black"
-            width={1}
-          />
-          {yTicks.map((tick) => (
-            <text x={-40} y={y(tick)}>
-              {tick}
-            </text>
-          ))}
-        </g>
-        <g
-          className="x-axis"
-          transform={`translate(${chartMargin}, -${chartMargin})`}
-        >
-          <line
-            x1={0}
-            y1={y(0)}
-            x2={x(allDatesDescending[allDatesDescending.length - 1])}
-            y2={y(0)}
-            stroke="black"
-            width={1}
-          />
-        </g>
+    <svg
+      height={chartHeight + margin.top + margin.bottom}
+      width={chartWidth + margin.left + margin.right}
+    >
+      <g className="y-axis">
+        <line
+          x1={x.range()[0]}
+          x2={x.range()[0]}
+          y1={y.range()[1]}
+          y2={y.range()[0]}
+          stroke="black"
+          width={1}
+        />
+        {yTicks.map((tick) => (
+          <text x={x.range()[0] - 30} y={y(tick)}>
+            {tick}
+          </text>
+        ))}
+      </g>
+      <g className="x-axis">
+        <line
+          y1={y.range()[0]}
+          y2={y.range()[0]}
+          x1={x.range()[0]}
+          x2={x.range()[1]}
+          stroke="black"
+          width={1}
+        />
+        {xTicks.map((tick) => (
+          <text transform={`translate(${x(tick)}, ${y(0) + 16}) rotate(45)`}>
+            {d3.timeFormat("%B")(tick)}
+          </text>
+        ))}
+      </g>
 
-        {series.map((s) => {
-          let color = barColors(s.key) as string
-          if (s.key === "Other") {
-            color = "yellow"
-          }
+      {series.map((s) => {
+        let color = barColors(s.key) as string
+        if (s.key === "Other") {
+          color = "yellow"
+        }
 
-          const line = d3
-            .area()
-            .x((d) => x(new Date(d.data.date)) + chartMargin)
-            .y0((d) => y(d[0]) - chartMargin)
-            .y1((d) => y(d[1]) - chartMargin)
-            .curve(d3.curveMonotoneX)
+        const line = d3
+          .area()
+          .x((d) => x(new Date(d.data.date)))
+          .y0((d) => y(d[0]))
+          .y1((d) => y(d[1]))
+          .curve(d3.curveMonotoneX)
 
-          return <path fill={color} d={line(s as any)} />
-        })}
-      </svg>
-    </>
+        return <path fill={color} d={line(s as any)} />
+      })}
+    </svg>
   )
 }
 
