@@ -5,11 +5,17 @@ import * as d3 from "d3"
 import { useWarrantData } from "./useWarrantData"
 
 const WarrantsByDayByNatureChart = () => {
-  const chartHeight = 750
-  const chartWidth = 1500
-  const chartMargin = 100
-  const barWidth = 7
-  const barLeftPadding = 5
+  const chartHeight = 750,
+    chartWidth = 1500,
+    chartMargin = 100,
+    barWidth = 7,
+    barLeftPadding = 5,
+    margin = {
+      top: 20,
+      right: 100,
+      bottom: 100,
+      left: 50
+    }
 
   const { processedData } = useWarrantData()
   if (!processedData) return null
@@ -26,12 +32,12 @@ const WarrantsByDayByNatureChart = () => {
   const y = d3
     .scaleLinear()
     .domain([0, maxWarrantsPerDay.count])
-    .range([chartHeight, chartMargin])
+    .range([chartHeight + margin.top, margin.top])
 
   const x = d3
     .scaleTime()
     .domain([d3.timeMonth.floor(oldestDate), mostRecentDate])
-    .range([0, chartWidth - chartMargin])
+    .range([margin.left, chartWidth + margin.left])
 
   const yTicks = y.ticks()
   const xTicks = x.ticks(d3.timeMonth.every(1))
@@ -51,44 +57,37 @@ const WarrantsByDayByNatureChart = () => {
 
   return (
     <>
-      <svg height={chartHeight} width={chartWidth}>
-        <g
-          className="y-axis"
-          transform={`translate(${chartMargin}, -${chartMargin})`}
-        >
+      <svg
+        height={chartHeight + margin.top + margin.bottom}
+        width={chartWidth + margin.left + margin.right}
+      >
+        <g className="y-axis">
           <line
-            x1={0}
-            y1={y(maxWarrantsPerDay.count)}
-            x2={0}
-            y2={y(0)}
+            x1={x.range()[0]}
+            x2={x.range()[0]}
+            y1={y.range()[1]}
+            y2={y.range()[0]}
             stroke="black"
             width={1}
           />
           {yTicks.map((tick) => (
-            <text x={-40} y={y(tick)}>
+            <text x={x.range()[0] - 40} y={y(tick)}>
               {tick}
             </text>
           ))}
         </g>
-        <g
-          className="x-axis"
-          transform={`translate(${chartMargin}, -${chartMargin})`}
-        >
+        <g className="x-axis">
           <line
-            x1={0}
-            y1={y(0)}
-            x2={x(allDatesDescending[allDatesDescending.length - 1])}
-            y2={y(0)}
+            x1={x.range()[0]}
+            x2={x.range()[1]}
+            y1={y.range()[0]}
+            y2={y.range()[0]}
             stroke="black"
             width={1}
           />
 
           {xTicks.map((tick) => (
-            <text
-              transform={`translate(${x(tick) + barLeftPadding}, ${
-                y(0) + 14
-              }) rotate(45)`}
-            >
+            <text transform={`translate(${x(tick)}, ${y(0) + 14}) rotate(45)`}>
               {d3.timeFormat("%B")(tick)}
             </text>
           ))}
@@ -98,15 +97,15 @@ const WarrantsByDayByNatureChart = () => {
 
           return allNaturesIncludingOther.map((nature) => {
             const barHeight =
-              y(0) -
+              y.range()[0] -
               y(warrantsByDateGroupedByNature[date.toDateString()][nature])
 
             usedHeight += barHeight
 
             return (
               <rect
-                x={x(date) + chartMargin}
-                y={chartHeight - usedHeight - chartMargin}
+                x={x(date)}
+                y={chartHeight - usedHeight + margin.top}
                 width={barWidth}
                 fill={barColors(nature) as string}
                 height={barHeight}
