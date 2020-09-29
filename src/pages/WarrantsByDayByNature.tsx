@@ -7,9 +7,7 @@ import { useWarrantData } from "./useWarrantData"
 const WarrantsByDayByNatureChart = () => {
   const chartHeight = 750,
     chartWidth = 1500,
-    chartMargin = 100,
     barWidth = 7,
-    barLeftPadding = 5,
     margin = {
       top: 20,
       right: 100,
