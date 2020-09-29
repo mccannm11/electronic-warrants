@@ -9,7 +9,14 @@ import { log } from "util"
 const WarrantsByCityVerticalChart = () => {
   const chartHeight = 1000
   const chartWidth = 1500
-  const chartMargin = 200
+  const barWidth = 18
+
+  const margin = {
+    top: 25,
+    right: 25,
+    bottom: 25,
+    left: 100
+  }
 
   const { processedData, records } = useWarrantData()
   if (!processedData) return null
@@ -24,12 +31,14 @@ const WarrantsByCityVerticalChart = () => {
   const x = d3
     .scaleLinear()
     .domain([0, maxWarrantsOfCity])
-    .range([chartMargin, chartHeight + chartMargin])
+    .range([margin.left, chartWidth + margin.left])
+
+  const xTicks = x.ticks()
 
   const y = d3
     .scaleBand()
     .domain(allCitiesByWarrantCountDescending)
-    .range([chartMargin, chartHeight + chartMargin])
+    .range([margin.top, chartHeight + margin.top])
     .padding(1.25)
     .paddingOuter(0.75)
 
@@ -41,7 +50,6 @@ const WarrantsByCityVerticalChart = () => {
     (r) => r["Primary Nature"]
   )
 
-  console.log(groupedByCity)
   const groupedByCityArray = [...groupedByCity.keys()].map((key) => {
     const counts = {}
 
@@ -57,14 +65,10 @@ const WarrantsByCityVerticalChart = () => {
 
   const stack = d3.stack().keys(_.uniq(allNatures))
   const series = stack(groupedByCityArray)
-  console.log(series)
-
   const uniqueNatures = _.uniq(allNatures)
-
   const colorScale = d3
     .scaleSequential(d3.interpolateRainbow)
     .domain([uniqueNatures.length - 1, 0])
-
   const barColors = d3
     .scaleOrdinal()
     .domain(uniqueNatures)
@@ -72,16 +76,11 @@ const WarrantsByCityVerticalChart = () => {
       [...new Array(uniqueNatures.length)].map((i, j) => colorScale(j * 5))
     )
 
-  const barWidth = 18
-  const barLeftPadding = 2
-
-  const xTicks = x.ticks()
-
   return (
     <>
       <svg
-        height={chartHeight + chartMargin * 2}
-        width={chartWidth + chartMargin * 2}
+        height={chartHeight + margin.top + margin.bottom}
+        width={chartWidth + margin.left + margin.right}
       >
         <g className="y-axis">
           <line
@@ -93,7 +92,10 @@ const WarrantsByCityVerticalChart = () => {
             width={1}
           />
           {allCitiesByWarrantCountDescending.map((city) => (
-            <text fontSize="12px" transform={`translate(100, ${y(city) + 10})`}>
+            <text
+              fontSize="12px"
+              transform={`translate(${margin.left - 100}, ${y(city) + 10})`}
+            >
               {city}
             </text>
           ))}
