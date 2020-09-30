@@ -1,44 +1,48 @@
 import { PageWithNavigationLayout } from "../layouts/PageWithNavigationLayout"
 import { PageHeader } from "../layouts/PageHeader"
-import React, { useEffect, useState } from "react"
+import React from "react"
 import * as d3 from "d3"
 import { useWarrantData } from "./useWarrantData"
 
-const WarrantsByCityDonutChart = () => {
-  const width = 500
-  const radius = width / 2
+class ChartDimensions {
+  margin: {
+    top: number
+    right: number
+    bottom: number
+    left: number
+  }
+  height: number
+  width: number
 
-  const margin = {
+  getSvgWidth() {
+    return this.width + this.margin.left + this.margin.right
+  }
+
+  getSvgHeight() {
+    return this.height + this.margin.top + this.margin.bottom
+  }
+}
+
+const WarrantsByCityDonutChart = () => {
+  const dimensions = new ChartDimensions()
+  dimensions.height = 500
+  dimensions.width = 500
+  dimensions.margin = {
     top: 100,
     right: 100,
     left: 100,
     bottom: 100
   }
+  const radius = dimensions.width / 2
 
   const { processedData, records } = useWarrantData()
   if (!processedData || !records) return null
 
   const {
-    allNaturesIncludingOther,
-    warrantsByDateGroupedByNature,
     allCities,
     warrantsByCity,
     allCitiesByWarrantCountDescending
   } = processedData
-
-  const warrantsByDateGroupedByNatureArray = Object.keys(
-    warrantsByDateGroupedByNature
-  ).map((date) => {
-    return {
-      date,
-      ...warrantsByDateGroupedByNature[date]
-    }
-  })
-
-  const series = d3
-    .stack()
-    .offset(d3.stackOffsetExpand)
-    .keys(allNaturesIncludingOther)(warrantsByDateGroupedByNatureArray)
 
   const colorScale = d3
     .scaleSequential(d3.interpolateRainbow)
@@ -61,29 +65,17 @@ const WarrantsByCityDonutChart = () => {
 
   return (
     <>
-      <svg height={width} width={width}>
+      <svg height={dimensions.getSvgHeight()} width={dimensions.getSvgWidth()}>
         <g transform={`translate(${radius}, ${radius})`}>
           <g>
-            {slices.map((slice, index) => {
-              return (
-                <path key={arc.data} fill={barColors(index)} d={arc(slice)}>
-                  <title>derp</title>
-                </path>
-              )
-            })}
+            {slices.map((slice, index) => (
+              <path key={arc.data} fill={barColors(index)} d={arc(slice)} />
+            ))}
           </g>
         </g>
       </svg>
     </>
   )
-}
-
-const useIsMounted = () => {
-  const [isMounted, setIsMounted] = useState(false)
-
-  useEffect(() => setIsMounted(true), [])
-
-  return isMounted
 }
 
 const WarrantsByCityDonut = () => (
