@@ -3,14 +3,24 @@ import { PageHeader } from "../layouts/PageHeader"
 import React from "react"
 import * as d3 from "d3"
 import { useWarrantData } from "./useWarrantData"
+import { ChartDimensions } from "./ChartDimensions"
 
 const WarrantsByCityChart = () => {
-  const chartHeight = 750
-  const chartWidth = 1500
-  const chartMargin = 100
-
   const { processedData } = useWarrantData()
   if (!processedData) return null
+
+  const dimensions = new ChartDimensions()
+  dimensions.width = 1500
+  dimensions.height = 750
+  dimensions.margin = {
+    top: 0,
+    right: 25,
+    bottom: 100,
+    left: 50
+  }
+
+  const barWidth = 30
+  const barLeftPadding = 2
 
   const {
     warrantsByCity,
@@ -22,81 +32,80 @@ const WarrantsByCityChart = () => {
   const y = d3
     .scaleLinear()
     .domain([0, maxWarrantsOfCity])
-    .range([chartHeight, chartMargin])
+    .range(dimensions.getYRange())
 
   const x = d3
     .scaleBand()
     .domain(allCitiesByWarrantCountDescending)
-    .range([0, chartWidth - chartMargin * 2])
+    .range(dimensions.getXRange())
 
   const xColorScale = d3.scaleSequential(d3.interpolatePiYG).domain(x.range())
-  const yColorScale = d3
-    .scaleSequential(d3.interpolateBlues)
-    .domain([chartMargin, chartHeight])
-
   const yTicks = y.ticks()
 
-  const barWidth = 30
-  const barLeftPadding = 2
+  return (
+    <svg height={dimensions.getSvgHeight()} width={dimensions.getSvgWidth()}>
+      <AxisLeft xScale={x} yScale={y} />
+      {yTicks.map((tick) => (
+        <text x={x.range()[0] - 35} y={y(tick)}>
+          {tick}
+        </text>
+      ))}
+
+      <AxisBottom xScale={x} yScale={y} />
+      {allCities.map((city) => (
+        <text
+          transform={`translate(${x(city) + barLeftPadding}, ${
+            y(0) + 14
+          }) rotate(45)`}
+        >
+          {city}
+        </text>
+      ))}
+
+      {allCities.map((city) => (
+        <g className="bar">
+          <rect
+            fill={xColorScale(x(city))}
+            width={barWidth}
+            height={y.range()[0] - y(warrantsByCity[city].count)}
+            x={x(city) + barLeftPadding}
+            y={y(warrantsByCity[city].count)}
+          />
+        </g>
+      ))}
+    </svg>
+  )
+}
+
+const AxisBottom = ({ xScale, yScale }) => {
+  const xRange = xScale.range()
+  const yRange = yScale.range()
 
   return (
-    <>
-      <svg height={chartHeight} width={chartWidth}>
-        <g
-          className="y-axis"
-          transform={`translate(${chartMargin}, -${chartMargin})`}
-        >
-          <line
-            x1={0}
-            y1={y(maxWarrantsOfCity)}
-            x2={0}
-            y2={y(0)}
-            stroke="black"
-            width={1}
-          />
-          {yTicks.map((tick) => (
-            <text x={-30} y={y(tick)}>
-              {tick}
-            </text>
-          ))}
-        </g>
-        <g
-          className="x-axis"
-          transform={`translate(${chartMargin}, -${chartMargin})`}
-        >
-          <line
-            x1={0}
-            y1={y(0)}
-            x2={x(allCities[allCities.length - 1]) + barLeftPadding}
-            y2={y(0)}
-            stroke="black"
-            width={1}
-          />
+    <line
+      x1={xRange[0]}
+      x2={xRange[1]}
+      y1={yRange[0]}
+      y2={yRange[0]}
+      stroke="black"
+      width={1}
+    />
+  )
+}
 
-          {allCities.map((city) => (
-            <text
-              transform={`translate(${x(city) + barLeftPadding}, ${
-                y(0) + 14
-              }) rotate(45)`}
-            >
-              {city}
-            </text>
-          ))}
-        </g>
+const AxisLeft = ({ xScale, yScale }) => {
+  const xRange = xScale.range()
+  const yRange = yScale.range()
 
-        {allCities.map((city) => (
-          <g className="bar">
-            <rect
-              fill={xColorScale(x(city))}
-              width={barWidth}
-              height={y(0) - y(warrantsByCity[city].count) - 1}
-              x={x(city) + chartMargin + barLeftPadding}
-              y={y(warrantsByCity[city].count) - chartMargin}
-            />
-          </g>
-        ))}
-      </svg>
-    </>
+  return (
+    <line
+      x1={xRange[0]}
+      x2={xRange[0]}
+      y1={yRange[1]}
+      y2={yRange[0]}
+      stroke="black"
+      width={1}
+    />
   )
 }
 

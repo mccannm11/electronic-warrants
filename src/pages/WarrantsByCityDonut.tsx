@@ -3,25 +3,7 @@ import { PageHeader } from "../layouts/PageHeader"
 import React from "react"
 import * as d3 from "d3"
 import { useWarrantData } from "./useWarrantData"
-
-class ChartDimensions {
-  margin: {
-    top: number
-    right: number
-    bottom: number
-    left: number
-  }
-  height: number
-  width: number
-
-  getSvgWidth() {
-    return this.width + this.margin.left + this.margin.right
-  }
-
-  getSvgHeight() {
-    return this.height + this.margin.top + this.margin.bottom
-  }
-}
+import { ChartDimensions } from "./ChartDimensions"
 
 const WarrantsByCityDonutChart = () => {
   const dimensions = new ChartDimensions()
