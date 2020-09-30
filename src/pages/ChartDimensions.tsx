@@ -25,4 +25,8 @@ export class ChartDimensions {
   getYRange() {
     return [this.height + this.margin.top, this.margin.top]
   }
+
+  getSvgDimensions() {
+    return { height: this.getSvgHeight(), width: this.getSvgWidth() }
+  }
 }

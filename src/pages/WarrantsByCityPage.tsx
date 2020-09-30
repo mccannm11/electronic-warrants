@@ -4,6 +4,8 @@ import React from "react"
 import * as d3 from "d3"
 import { useWarrantData } from "./useWarrantData"
 import { ChartDimensions } from "./ChartDimensions"
+import { AxisBottom } from "./AxisBottom"
+import { AxisLeft } from "./AxisLeft"
 
 const WarrantsByCityChart = () => {
   const { processedData } = useWarrantData()
@@ -74,38 +76,6 @@ const WarrantsByCityChart = () => {
         </g>
       ))}
     </svg>
-  )
-}
-
-const AxisBottom = ({ xScale, yScale }) => {
-  const xRange = xScale.range()
-  const yRange = yScale.range()
-
-  return (
-    <line
-      x1={xRange[0]}
-      x2={xRange[1]}
-      y1={yRange[0]}
-      y2={yRange[0]}
-      stroke="black"
-      width={1}
-    />
-  )
-}
-
-const AxisLeft = ({ xScale, yScale }) => {
-  const xRange = xScale.range()
-  const yRange = yScale.range()
-
-  return (
-    <line
-      x1={xRange[0]}
-      x2={xRange[0]}
-      y1={yRange[1]}
-      y2={yRange[0]}
-      stroke="black"
-      width={1}
-    />
   )
 }
 
