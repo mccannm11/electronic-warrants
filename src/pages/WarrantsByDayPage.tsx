@@ -20,6 +20,7 @@ const WarrantsByDayChart = () => {
   }
   dimensions.width = 1500
   dimensions.height = 750
+
   const barWidth = 6
 
   const {

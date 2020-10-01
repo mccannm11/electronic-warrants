@@ -4,14 +4,17 @@ import React from "react"
 import * as d3 from "d3"
 import { useWarrantData } from "./useWarrantData"
 import _ from "lodash"
-import { log } from "util"
+import { ChartDimensions } from "./ChartDimensions"
+import { AxisLeft } from "./AxisLeft"
+import { AxisTop } from "./AxisTop"
 
 const WarrantsByCityVerticalChart = () => {
-  const chartHeight = 1000
-  const chartWidth = 1500
   const barWidth = 18
 
-  const margin = {
+  const dimensions = new ChartDimensions()
+  dimensions.height = 1000
+  dimensions.width = 1500
+  dimensions.margin = {
     top: 25,
     right: 25,
     bottom: 25,
@@ -31,14 +34,14 @@ const WarrantsByCityVerticalChart = () => {
   const x = d3
     .scaleLinear()
     .domain([0, maxWarrantsOfCity])
-    .range([margin.left, chartWidth + margin.left])
+    .range(dimensions.getXRange())
 
   const xTicks = x.ticks()
 
   const y = d3
     .scaleBand()
-    .domain(allCitiesByWarrantCountDescending)
-    .range([margin.top, chartHeight + margin.top])
+    .domain(_.reverse(allCitiesByWarrantCountDescending))
+    .range(dimensions.getYRange())
     .padding(1.25)
     .paddingOuter(0.75)
 
@@ -76,68 +79,45 @@ const WarrantsByCityVerticalChart = () => {
     )
 
   return (
-    <>
-      <svg
-        height={chartHeight + margin.top + margin.bottom}
-        width={chartWidth + margin.left + margin.right}
-      >
-        <g className="y-axis">
-          <line
-            x1={x.range()[0]}
-            x2={x.range()[0]}
-            y1={y.range()[0]}
-            y2={y.range()[1]}
-            stroke="black"
-            width={1}
-          />
-          {allCitiesByWarrantCountDescending.map((city) => (
-            <text
-              fontSize="12px"
-              transform={`translate(${margin.left - 100}, ${y(city) + 10})`}
-            >
-              {city}
-            </text>
-          ))}
-        </g>
-        <g className="x-axis">
-          <line
-            x1={x.range()[0]}
-            x2={x.range()[1]}
-            y1={y.range()[0]}
-            y2={y.range()[0]}
-            stroke="black"
-            width={1}
-          />
-          {xTicks.map((tick) => (
-            <text fontSize="12px" x={x(tick)} y={y.range()[0] - 8}>
-              {tick}
-            </text>
-          ))}
-        </g>
+    <svg {...dimensions.getSvgDimensions()}>
+      <AxisLeft xScale={x} yScale={y} />
+      {allCitiesByWarrantCountDescending.map((city) => (
+        <text
+          fontSize="12px"
+          transform={`translate(${dimensions.margin.left - 100}, ${
+            y(city) + 10
+          })`}
+        >
+          {city}
+        </text>
+      ))}
+      <AxisTop yScale={y} xScale={x} />
+      {xTicks.map((tick) => (
+        <text fontSize="12px" x={x(tick)} y={y.range()[1] - 8}>
+          {tick}
+        </text>
+      ))}
 
-        <g>
-          {series.map((s) => {
-            return s.map((r) => {
-              return (
-                <rect
-                  x={x(r[0])}
-                  y={y(r.data.key) - 4}
-                  width={x(r[1]) - x(r[0])}
-                  height={barWidth}
-                  fill={barColors(s.key)}
-                />
-              )
-            })
-          })}
-        </g>
-      </svg>
-    </>
+      {series.map((s) => {
+        return s.map((r) => {
+          return (
+            <rect
+              x={x(r[0])}
+              y={y(r.data.key) - 4}
+              width={x(r[1]) - x(r[0])}
+              height={barWidth}
+              fill={barColors(s.key)}
+            />
+          )
+        })
+      })}
+    </svg>
   )
 }
 
 const WarrantsByCityVertical = () => (
   <PageWithNavigationLayout>
-    <PageHeader>Warrants by city</PageHeader>
+    <PageHeader>Warrants by city vertical</PageHeader>
     <WarrantsByCityVerticalChart />
   </PageWithNavigationLayout>
 )
