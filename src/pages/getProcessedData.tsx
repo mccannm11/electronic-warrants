@@ -124,25 +124,21 @@ const getWarrantsByDateGroupedByNature = (records: any[]) => {
 
   const allDays = Object.keys(warrantsByDay)
   const result = {}
+  const warrantsByNature = getWarrantsByNature(records)
+  const allNatures = getAllNaturesByWarrantCountDescending(warrantsByNature)
 
   for (const day of allDays) {
     const countsByNature = {}
 
-    const warrantsByNature = getWarrantsByNature(records)
-    const allNatures = getAllNaturesByWarrantCountDescending(warrantsByNature)
-
     for (const nature of allNatures) {
-      const recordCount = warrantsByDay[day].filter(
+      countsByNature[nature] = warrantsByDay[day].filter(
         (r) => r["Primary Nature"] === nature
       ).length
-      countsByNature[nature] = recordCount
     }
 
-    const otherCount = warrantsByDay[day].filter(
+    countsByNature["Other"] = warrantsByDay[day].filter(
       (r) => !allNatures.includes(r["Primary Nature"])
     ).length
-
-    countsByNature["Other"] = otherCount
 
     result[day] = countsByNature
   }

@@ -9,13 +9,13 @@ import { AxisLeft } from "./AxisLeft"
 import { AxisTop } from "./AxisTop"
 
 const WarrantsByCityVerticalChart = () => {
-  const barWidth = 18
+  const barWidth = 14
 
   const dimensions = new ChartDimensions()
-  dimensions.height = 1000
+  dimensions.height = 900
   dimensions.width = 1500
   dimensions.margin = {
-    top: 25,
+    top: 20,
     right: 25,
     bottom: 25,
     left: 100

@@ -7,8 +7,6 @@ import { useWarrantData } from "./useWarrantData"
 const WarrantsByNatureStackedAreaChart = () => {
   const chartHeight = 750
   const chartWidth = 1500
-  const chartMargin = 200
-
   const margin = {
     top: 10,
     right: 200,
