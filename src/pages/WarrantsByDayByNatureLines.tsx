@@ -4,16 +4,23 @@ import React from "react"
 import * as d3 from "d3"
 import path from "path"
 import { useWarrantData } from "./useWarrantData"
+import { ChartDimensions } from "./ChartDimensions"
+import { AxisBottom } from "./AxisBottom"
+import { AxisLeft } from "./AxisLeft"
 
 const WarrantsByDayByNatureLinesChart = () => {
-  const chartHeight = 750
-  const chartWidth = 2000
-  const chartMargin = 100
-  const barWidth = 8
-  const barLeftPadding = 10
-
   const { processedData } = useWarrantData()
   if (!processedData) return null
+
+  const dimensions = new ChartDimensions()
+  dimensions.height = 750
+  dimensions.width = 1000
+  dimensions.margin = {
+    top: 0,
+    right: 0,
+    bottom: 100,
+    left: 50
+  }
 
   const {
     warrantsByDateGroupedByNature,
@@ -27,12 +34,12 @@ const WarrantsByDayByNatureLinesChart = () => {
   const y = d3
     .scaleLinear()
     .domain([0, maxWarrantsPerDay.count])
-    .range([chartHeight, chartMargin])
+    .range(dimensions.getYRange())
 
   const x = d3
     .scaleTime()
     .domain([d3.timeMonth.floor(oldestDate), mostRecentDate])
-    .range([0, chartWidth - chartMargin])
+    .range(dimensions.getXRange())
 
   const yTicks = y.ticks()
   const xTicks = x.ticks(d3.timeMonth.every(1))
@@ -52,72 +59,40 @@ const WarrantsByDayByNatureLinesChart = () => {
 
   const lines = allNaturesIncludingOther.map((nature) => {
     return {
-      d: d3.line()(
-        allDatesDescending.map((date) => [
-          x(date) + chartMargin,
-          y(warrantsByDateGroupedByNature[date.toDateString()][nature]) -
-            chartMargin -
-            1
+      d: d3.line()([
+        [x.range()[0], y.range()[0]],
+        ...allDatesDescending.map((date) => [
+          x(date),
+          y(warrantsByDateGroupedByNature[date.toDateString()][nature]) - 1
         ])
-      ),
+      ]),
       nature
     }
   })
 
   return (
-    <>
-      <svg height={chartHeight} width={chartWidth}>
-        <g
-          className="y-axis"
-          transform={`translate(${chartMargin}, -${chartMargin})`}
-        >
-          <line
-            x1={0}
-            y1={y(maxWarrantsPerDay.count)}
-            x2={0}
-            y2={y(0)}
-            stroke="black"
-            width={1}
-          />
-          {yTicks.map((tick) => (
-            <text x={-40} y={y(tick)}>
-              {tick}
-            </text>
-          ))}
-        </g>
-        <g
-          className="x-axis"
-          transform={`translate(${chartMargin}, -${chartMargin})`}
-        >
-          <line
-            x1={0}
-            y1={y(0)}
-            x2={x(allDatesDescending[allDatesDescending.length - 1])}
-            y2={y(0)}
-            stroke="black"
-            width={1}
-          />
-
-          {xTicks.map((tick) => (
-            <text
-              transform={`translate(${x(tick) + barLeftPadding}, ${
-                y(0) + 14
-              }) rotate(45)`}
-            >
-              {d3.timeFormat("%B")(tick)}
-            </text>
-          ))}
-        </g>
-        {lines.map((line) => (
-          <path
-            d={line.d}
-            stroke={lineColors(line.nature) as string}
-            strokeWidth={2}
-            fill="none"
-          />
-        ))}
-      </svg>
-    </>
+    <svg {...dimensions.getSvgDimensions()}>
+      <AxisLeft xScale={x} yScale={y} />
+      {yTicks.map((tick) => (
+        <text x={x.range()[0] - 40} y={y(tick)}>
+          {tick}
+        </text>
+      ))}
+      <AxisBottom xScale={x} yScale={y} />
+      {xTicks.map((tick) => (
+        <text transform={`translate(${x(tick)}, ${y(0) + 14}) rotate(45)`}>
+          {d3.timeFormat("%B")(tick)}
+        </text>
+      ))}
+      {lines.map((line) => (
+        <path
+          d={line.d}
+          stroke={lineColors(line.nature) as string}
+          strokeWidth={2}
+          fill="none"
+        />
+      ))}
+    </svg>
   )
 }
 
