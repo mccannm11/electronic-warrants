@@ -8,6 +8,7 @@ const StyledCode = styled.div`
   padding: 8px 16px;
   color: rgba(0, 0, 0, 0.8);
   font-size: 14px;
+  overflow-x: scroll;
 `
 
 const Code = (props) => {

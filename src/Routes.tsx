@@ -11,6 +11,7 @@ import { WarrantsByCityVertical } from "./pages/WarrantsByCityVertical"
 import { WarrantsByCityVerticalNormalized } from "./pages/WarrantsByCityVerticalNormalized"
 import { WarrantsByCityDonut } from "./pages/WarrantsByCityDonut"
 import { WarrantsByCitySunburst } from "./pages/WarrantsByCitySunburst"
+import { TransformationsPage } from "./pages/DataTransformationPage"
 
 export type Route = {
   path: string
@@ -96,6 +97,12 @@ const Routes: Route[] = [
     path: "/by-city-sunburst",
     component: WarrantsByCitySunburst,
     title: "By city sunburst",
+    exact: true
+  },
+  {
+    path: "/transformations",
+    component: TransformationsPage,
+    title: "Data transformations",
     exact: true
   }
 ]
