@@ -10,7 +10,7 @@
     "@types/react-json-pretty": "^2.2.0",
     "@types/react-router-dom": "^5.1.5",
     "@types/styled-components": "^5.1.2",
-    "d3": "^6.1.1",
+    "d3": "6.2.0",
     "lodash": "^4.17.20",
     "prettier": "^2.0.5",
     "react": "^16.13.1",
