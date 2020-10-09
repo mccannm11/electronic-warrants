@@ -12,6 +12,7 @@ import { WarrantsByCityVerticalNormalized } from "./pages/WarrantsByCityVertical
 import { WarrantsByCityDonut } from "./pages/WarrantsByCityDonut"
 import { WarrantsByCitySunburst } from "./pages/WarrantsByCitySunburst"
 import { TransformationsPage } from "./pages/DataTransformationPage"
+import { WarrantsByMonthAndCityStackedArea } from "./pages/WarrantsByMonthAndCityStackedArea"
 
 export type Route = {
   path: string
@@ -103,6 +104,12 @@ const Routes: Route[] = [
     path: "/transformations",
     component: TransformationsPage,
     title: "Data transformations",
+    exact: true
+  },
+  {
+    path: "/by-month-stacked",
+    component: WarrantsByMonthAndCityStackedArea,
+    title: "By month stacked",
     exact: true
   }
 ]

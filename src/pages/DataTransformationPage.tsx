@@ -7,6 +7,7 @@ import { Code } from "../typography/Code"
 import { Spacer } from "../utilities/Spacer"
 import JSONPretty from "react-json-pretty"
 import { Header } from "../typography/Header"
+import { useWarrantData } from "./useWarrantData"
 
 const mapToObj = (map: Map<any, any>) => {
   const object = {}
@@ -354,17 +355,100 @@ const Iterables = () => {
   )
 }
 
-const TransformationsPage = () => (
-  <PageWithNavigationLayout>
-    <PageHeader>Transformations</PageHeader>
-    <Statistics />
-    <Spacer height={1} />
-    <Search />
-    <Spacer height={1} />
-    <Transformations />
-    <Spacer height={1} />
-    <Iterables />
-  </PageWithNavigationLayout>
-)
+const Sets = () => {
+  return (
+    <Panel>
+      <PanelHeader>Sets</PanelHeader>
+      <Example
+        title="difference"
+        func={() => {
+          const a = [1, 2, 3]
+          const b = [2, 3, 4]
+
+          return Array.from(d3.difference(a, b))
+        }}
+      />
+      <Example
+        title="union"
+        func={() => {
+          const a = [1, 2, 3]
+          const b = [2, 3, 4]
+
+          return Array.from(d3.union(a, b))
+        }}
+      />
+      <Example
+        title="intersection"
+        func={() => {
+          const a = [1, 2, 3]
+          const b = [2, 3, 4]
+
+          return Array.from(d3.intersection(a, b))
+        }}
+      />
+      <Example
+        title="superset"
+        func={() => {
+          const a = [1, 2, 3, 4]
+          const b = [2, 4]
+
+          return Array.from(d3.superset(a, b))
+        }}
+      />
+      <Example
+        title="disjoint"
+        func={() => {
+          const a = [1, 2, 3]
+          const b = [2, 3, 4]
+
+          return d3.disjoint(a, b).toString()
+        }}
+      />
+    </Panel>
+  )
+}
+
+const TransformationsPage = () => {
+  const { records } = useWarrantData()
+  if (!records) return null
+
+  console.log(records)
+  const groupedByDay = d3.group(records, (r) => r.Submitted.toDateString())
+  console.log(groupedByDay)
+
+  const groupedByMonth = d3.groups(
+    records,
+    (r) => d3.timeMonth.floor(r.Submitted).toString(),
+    (r) => r["County of Court"],
+    (r) => r["Primary Nature"]
+  )
+
+  const rollupByMonth = d3.rollup(
+    records,
+    (r) =>
+      d3.rollup(
+        r,
+        (m) => m.length,
+        (m) => m["County of Court"]
+      ),
+    (r) => d3.timeMonth.floor(r.Submitted).toString()
+  )
+  console.log("rollupByMonth", rollupByMonth)
+
+  return (
+    <PageWithNavigationLayout>
+      <PageHeader>Transformations</PageHeader>
+      <Statistics />
+      <Spacer height={1} />
+      <Search />
+      <Spacer height={1} />
+      <Transformations />
+      <Spacer height={1} />
+      <Iterables />
+      <Spacer height={1} />
+      <Sets />
+    </PageWithNavigationLayout>
+  )
+}
 
 export { TransformationsPage }
