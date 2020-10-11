@@ -7,7 +7,7 @@ import { ChartDimensions } from "./ChartDimensions"
 import { AxisBottom } from "./AxisBottom"
 import { AxisLeft } from "./AxisLeft"
 
-const WarrantsByMonthAndCityStackedAreaChart = () => {
+const WarrantsByMonthAndCityStackedBarChart = () => {
   const dimensions = new ChartDimensions()
   dimensions.height = 500
   dimensions.width = 1000
@@ -101,26 +101,29 @@ const WarrantsByMonthAndCityStackedAreaChart = () => {
         </>
       ))}
 
-      {series.map((s) => {
-        let color = barColors(s.key) as string
-        const line = d3
-          .area()
-          .x((d) => x(new Date(d.data[0])))
-          .y0((d) => y(d[0]))
-          .y1((d) => y(d[1]))
-          .curve(d3.curveMonotoneX)
-
-        return <path fill={color} d={line(s as any)} />
+      {series.map((city) => {
+        return city.map((month) => {
+          const height = y(month[0]) - y(month[1])
+          return (
+            <rect
+              fill={barColors(city.key)}
+              width={barWidth}
+              y={y(month[1])}
+              height={height}
+              x={x(new Date(month.data[0]))}
+            />
+          )
+        })
       })}
     </svg>
   )
 }
 
-const WarrantsByMonthAndCityStackedArea = () => (
+const WarrantsByMonthAndCityStackedBar = () => (
   <PageWithNavigationLayout>
     <PageHeader>Warrants by month stacked area</PageHeader>
-    <WarrantsByMonthAndCityStackedAreaChart />
+    <WarrantsByMonthAndCityStackedBarChart />
   </PageWithNavigationLayout>
 )
 
-export { WarrantsByMonthAndCityStackedArea }
+export { WarrantsByMonthAndCityStackedBar }
