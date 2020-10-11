@@ -116,6 +116,18 @@ const WarrantsByNatureStackedAreaChart = () => {
 
         return <path fill={color} d={line(s as any)} />
       })}
+
+      {allNaturesIncludingOther.map((nature, i) => {
+        return (
+          <rect
+            fill={barColors(nature)}
+            x={300 + i * 20}
+            y={margin.top}
+            height={10}
+            width={10}
+          />
+        )
+      })}
     </svg>
   )
 }

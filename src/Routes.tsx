@@ -98,12 +98,6 @@ const Routes: Route[] = [
     exact: true
   },
   {
-    path: "/by-city-sunburst",
-    component: WarrantsByCitySunburst,
-    title: "By city sunburst",
-    exact: true
-  },
-  {
     path: "/transformations",
     component: TransformationsPage,
     title: "Data transformations",

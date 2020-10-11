@@ -35,7 +35,6 @@ const WarrantsByCityVerticalNormalizedChart = () => {
     .padding(1.25)
     .paddingOuter(0.75)
 
-  // console.log(records)
   const groupedByCity = d3.rollup(
     records,
     (r) => r,

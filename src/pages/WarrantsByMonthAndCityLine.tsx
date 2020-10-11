@@ -35,16 +35,10 @@ const WarrantsByMonthAndCityStackedAreaChart = () => {
     (r) => d3.timeMonth.floor(r.Submitted).toString()
   )
 
-  const maxWarrantsInAMonth = d3.max(
-    d3.map(rollupByMonth, (month) =>
-      d3.sum(d3.map(month[1], (city) => city[1]))
-    )
-  )
-
   const allDates = d3.map(rollupByMonth, (month) => new Date(month[0]))
   const dateRange = d3.extent(allDates)
 
-  const y = d3.scaleLinear().domain([0, 60]).range(dimensions.getYRange())
+  const y = d3.scaleLinear().domain([0, 55]).range(dimensions.getYRange())
 
   const xRange = dimensions.getXRange()
   const adjustedXRange = [xRange[0], xRange[1] + barWidth / 2]
@@ -56,14 +50,27 @@ const WarrantsByMonthAndCityStackedAreaChart = () => {
     )
   )
 
+  const warrantsCountByCity = d3.rollup(
+    records,
+    (r) => r.length,
+    (r) => r["County of Court"]
+  )
+
+  const top3Cities = d3
+    .sort(warrantsCountByCity, (a, b) => d3.descending(a[1], b[1]))
+    .slice(0, 3)
+    .map((r) => r[0])
+
+  console.log(top3Cities)
+
   const colorScale = d3
     .scaleSequential(d3.interpolateRainbow)
     .domain([allCities.size - 1, 0])
 
   const barColors = d3
     .scaleOrdinal()
-    .domain([...allCities])
-    .range([...new Array(allCities.size)].map((i, j) => colorScale(j)))
+    .domain([...top3Cities])
+    .range([...new Array(top3Cities.size)].map((i, j) => colorScale(j)))
 
   const xTicks = x.ticks()
   const yTicks = y.ticks()
@@ -93,15 +100,37 @@ const WarrantsByMonthAndCityStackedAreaChart = () => {
         </>
       ))}
 
-      {d3.map(allCities, (city) => {
-        const line = d3.line().curve(d3.curveMonotoneX)(
-          xTicks.map((month) => {
-            const warrantsInMonth =
-              rollupByMonth.get(month.toString()).get(city) ?? 0
-            return [x(month), y(warrantsInMonth)]
-          })
+      {d3.map(top3Cities, (city) => {
+        const points = xTicks.map((month) => {
+          const warrantsInMonth =
+            rollupByMonth.get(month.toString()).get(city) ?? 0
+          return [x(month), y(warrantsInMonth)]
+        })
+
+        const line = d3.line()
+        console.log(points)
+        const delauny = d3.Delaunay.from(points)
+        const voronoi = delauny.voronoi([
+          dimensions.margin.left,
+          dimensions.margin.top,
+          dimensions.width + dimensions.margin.left,
+          dimensions.height + dimensions.margin.top
+        ])
+        console.log(voronoi)
+
+        const voronoiPath = voronoi.render()
+
+        return (
+          <>
+            {/*<path fill="none" stroke={barColors(city)} width={2} d={line} />*/}
+            <path
+              fill={barColors(city)}
+              stroke={barColors(city)}
+              width={1}
+              d={voronoiPath}
+            />
+          </>
         )
-        return <path fill="none" stroke={barColors(city)} width={2} d={line} />
       })}
     </svg>
   )
@@ -109,7 +138,7 @@ const WarrantsByMonthAndCityStackedAreaChart = () => {
 
 const WarrantsByMonthAndCityLine = () => (
   <PageWithNavigationLayout>
-    <PageHeader>Warrants by month stacked area</PageHeader>
+    <PageHeader>Warrants by month - top 3 cities line</PageHeader>
     <WarrantsByMonthAndCityStackedAreaChart />
   </PageWithNavigationLayout>
 )
