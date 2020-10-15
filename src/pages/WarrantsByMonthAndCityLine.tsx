@@ -121,15 +121,12 @@ const WarrantsByMonthAndCityStackedAreaChart = () => {
         const voronoiPath = voronoi.render()
 
         return (
-          <>
-            {/*<path fill="none" stroke={barColors(city)} width={2} d={line} />*/}
-            <path
-              fill={barColors(city)}
-              stroke={barColors(city)}
-              width={1}
-              d={voronoiPath}
-            />
-          </>
+          <path
+            fill={barColors(city)}
+            stroke={barColors(city)}
+            width={1}
+            d={voronoiPath}
+          />
         )
       })}
     </svg>

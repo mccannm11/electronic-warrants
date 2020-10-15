@@ -1,6 +1,6 @@
 import { PageWithNavigationLayout } from "../layouts/PageWithNavigationLayout"
 import { PageHeader } from "../layouts/PageHeader"
-import React from "react"
+import React, { useEffect, useState } from "react"
 import * as d3 from "d3"
 import { useWarrantData } from "./useWarrantData"
 import { ChartDimensions } from "./ChartDimensions"
@@ -10,10 +10,10 @@ import { AxisLeft } from "./AxisLeft"
 const WarrantsByMonthAndCityStackedBarChart = () => {
   const dimensions = new ChartDimensions()
   dimensions.height = 500
-  dimensions.width = 1000
+  dimensions.width = 1250
   dimensions.margin = {
     top: 0,
-    right: 0,
+    right: 300,
     bottom: 100,
     left: 50
   }
@@ -21,7 +21,17 @@ const WarrantsByMonthAndCityStackedBarChart = () => {
   const barWidth = 100
 
   const { records } = useWarrantData()
-  if (!records) return null
+  const [rectangles, setRectangles] = useState([])
+  const animatedData = useAnimatedData(
+    rectangles,
+    (rect, c) => {
+      return {
+        ...rect,
+        height: rect.height * c
+      }
+    },
+    1000
+  )
 
   const rollupByMonth = d3.rollup(
     records,
@@ -76,18 +86,43 @@ const WarrantsByMonthAndCityStackedBarChart = () => {
   const xTicks = x.ticks()
   const yTicks = y.ticks()
 
+  useEffect(() => {
+    setRectangles(
+      d3.merge(
+        series.map((city) => {
+          return city.map((month) => {
+            const height = y(month[0]) - y(month[1])
+            return {
+              key: `${city.key}-${month.data[0]}`,
+              fill: barColors(city.key),
+              width: barWidth,
+              y: y(month[1]),
+              height: height,
+              x: x(new Date(month.data[0]))
+            }
+          })
+        })
+      )
+    )
+  }, [records])
+
+  console.log(animatedData)
+
   return (
     <svg {...dimensions.getSvgDimensions()}>
       <AxisBottom xScale={x} yScale={y} />
       {xTicks.map((tick) => (
-        <text transform={`translate(${x(tick)}, ${y(0) + 14}) rotate(45)`}>
+        <text
+          transform={`translate(${x(tick)}, ${y(0) + 14}) rotate(45)`}
+          key={tick}
+        >
           {d3.timeFormat("%B")(tick)}
         </text>
       ))}
       <AxisLeft xScale={x} yScale={y} />
       {yTicks.map((tick) => (
-        <>
-          <text x={x.range()[0] - 40} y={y(tick)}>
+        <React.Fragment key={tick}>
+          <text x={x.range()[0] - 40} y={y(tick)} key={tick}>
             {tick}
           </text>
           <line
@@ -98,25 +133,53 @@ const WarrantsByMonthAndCityStackedBarChart = () => {
             strokeWidth={1}
             stroke={"rgba(0,0,0,.5)"}
           />
-        </>
+        </React.Fragment>
       ))}
 
-      {series.map((city) => {
-        return city.map((month) => {
-          const height = y(month[0]) - y(month[1])
-          return (
-            <rect
-              fill={barColors(city.key)}
-              width={barWidth}
-              y={y(month[1])}
-              height={height}
-              x={x(new Date(month.data[0]))}
-            />
-          )
-        })
+      {animatedData.map((rectangle) => {
+        return <rect {...rectangle} />
       })}
     </svg>
   )
+}
+
+type Milliseconds = number
+
+function useAnimatedData<TData>(
+  data: TData[],
+  animator: (element: TData, c: number) => TData,
+  animationTime: Milliseconds
+) {
+  let completeCoeff = 0
+  const [animatedData, setAnimatedData] = useState<TData[]>([])
+
+  const { requestAnimationFrame, cancelAnimationFrame } = window
+  let firstTimestamp, previousTimestamp, frame
+
+  const animate = (timestamp) => {
+    firstTimestamp = firstTimestamp ?? timestamp
+    const elapsedTime = timestamp - firstTimestamp
+    completeCoeff = elapsedTime / animationTime
+
+    if (elapsedTime <= animationTime) {
+      frame = requestAnimationFrame(animate)
+    } else {
+      completeCoeff = 1
+      console.log("Animation finished")
+    }
+
+    setAnimatedData(data.map((d) => animator(d, completeCoeff)))
+    previousTimestamp = timestamp
+  }
+
+  useEffect(() => {
+    setAnimatedData(data.map((d) => animator(d, 0)))
+
+    frame = requestAnimationFrame(animate)
+    return () => cancelAnimationFrame(frame)
+  }, [data])
+
+  return animatedData
 }
 
 const WarrantsByMonthAndCityStackedBar = () => (
