@@ -10,7 +10,6 @@ import { WarrantsByNatureStackedArea } from "./pages/WarrantsByNatureStackedArea
 import { WarrantsByCityVertical } from "./pages/WarrantsByCityVertical"
 import { WarrantsByCityVerticalNormalized } from "./pages/WarrantsByCityVerticalNormalized"
 import { WarrantsByCityDonut } from "./pages/WarrantsByCityDonut"
-import { WarrantsByCitySunburst } from "./pages/WarrantsByCitySunburst"
 import { TransformationsPage } from "./pages/DataTransformationPage"
 import { WarrantsByMonthAndCityStackedBar } from "./pages/WarrantsByMonthAndCityStackedBar"
 import { WarrantsByMonthAndCityStackedArea } from "./pages/WarrantsByMonthAndCityStackedArea"

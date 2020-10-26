@@ -107,8 +107,6 @@ const WarrantsByMonthAndCityStackedAreaChart = () => {
           return [x(month), y(warrantsInMonth)]
         })
 
-        const line = d3.line()
-        console.log(points)
         const delauny = d3.Delaunay.from(points)
         const voronoi = delauny.voronoi([
           dimensions.margin.left,
@@ -116,7 +114,6 @@ const WarrantsByMonthAndCityStackedAreaChart = () => {
           dimensions.width + dimensions.margin.left,
           dimensions.height + dimensions.margin.top
         ])
-        console.log(voronoi)
 
         const voronoiPath = voronoi.render()
 

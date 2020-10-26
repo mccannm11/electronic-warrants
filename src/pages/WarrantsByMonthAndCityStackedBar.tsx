@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { PageWithNavigationLayout } from "../layouts/PageWithNavigationLayout"
 import { PageHeader } from "../layouts/PageHeader"
 import React, { useEffect, useState } from "react"
@@ -6,7 +7,6 @@ import { useWarrantData } from "./useWarrantData"
 import { ChartDimensions } from "./ChartDimensions"
 import { AxisBottom } from "./AxisBottom"
 import { AxisLeft } from "./AxisLeft"
-
 const WarrantsByMonthAndCityStackedBarChart = () => {
   const dimensions = new ChartDimensions()
   dimensions.height = 500
@@ -104,9 +104,7 @@ const WarrantsByMonthAndCityStackedBarChart = () => {
         })
       )
     )
-  }, [records])
-
-  console.log(animatedData)
+  }, [records, x, y, series, barColors])
 
   return (
     <svg {...dimensions.getSvgDimensions()}>
