@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React from "react"
 import { PageWithNavigationLayout } from "../layouts/PageWithNavigationLayout"
 import { PageHeader } from "../layouts/PageHeader"
@@ -8,7 +9,6 @@ import { Spacer } from "../utilities/Spacer"
 import JSONPretty from "react-json-pretty"
 import { Header } from "../typography/Header"
 import { useWarrantData } from "./useWarrantData"
-
 const mapToObj = (map: Map<any, any>) => {
   const object = {}
   map.forEach((value, key) => {

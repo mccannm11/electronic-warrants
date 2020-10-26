@@ -4,7 +4,6 @@ import React from "react"
 import * as d3 from "d3"
 import { useWarrantData } from "./useWarrantData"
 import _ from "lodash"
-import { log } from "util"
 
 const WarrantsByCityVerticalNormalizedChart = () => {
   const chartHeight = 1000
